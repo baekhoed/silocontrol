@@ -1058,6 +1058,9 @@
         let currentUser = null; // NOVO: Armazena o perfil do usuário
         let isAdmin = false;    // NOVO: Flag de admin
         
+        // CORREÇÃO: Flag para "condição de corrida" (race condition) do login
+        let isHandlingRedirect = false; 
+        
         let globalSilos = []; 
         let globalMedicoes = []; 
         let globalClassificacoes = []; 
@@ -1182,7 +1185,8 @@
                 
                 loadApiKey(); 
                 
-                // NOVO: Checa se estamos voltando de um redirect do Google
+                // CORREÇÃO: Define a flag ANTES de checar o redirect
+                isHandlingRedirect = true;
                 try {
                     const result = await getRedirectResult(auth);
                     if (result) {
@@ -1195,10 +1199,18 @@
                     // Erros comuns aqui são 'auth/account-exists-with-different-credential'
                     console.error("Erro ao obter resultado do redirect:", error);
                     loginError.textContent = `Erro no login: ${error.message}`;
+                } finally {
+                    // CORREÇÃO: Libera a flag DEPOIS que o redirect terminar
+                    isHandlingRedirect = false;
                 }
 
                 onAuthStateChanged(auth, async (user) => {
-                    // CORREÇÃO: Adicionado try...catch para robustez no login
+                    // CORREÇÃO: Checa a flag para não deslogar o usuário por engano
+                    if (isHandlingRedirect) {
+                        console.log("onAuthStateChanged: esperando redirect terminar...");
+                        return; 
+                    }
+                    
                     try {
                         if (user) {
                             // Usuário está logado
@@ -1545,7 +1557,7 @@
                 const btnConfirm = document.getElementById('modal-btn-confirm');
                 btnConfirm.textContent = confirmText;
                 
-                // Aplica a classe de cor correta (padrão é verde, vermelho é passado manualmente)
+                // Aplica a classe de cor correta (padrão é verde, vermelho é passado manually)
                 let baseClass = "py-2 px-4 rounded-md text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2";
                 if (confirmText.toLowerCase() === 'excluir') {
                      btnConfirm.className = `${baseClass} btn-destructive focus:ring-red-500`;
