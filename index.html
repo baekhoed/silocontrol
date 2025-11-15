@@ -1206,9 +1206,9 @@
                 
                 loadApiKey(); 
                 
-                // ****** CORREÇÃO LOGIN LOOP ******
+                // ****** CORREÇÃO LOGIN LOOP (Início) ******
                 // Define a flag ANTES de checar o redirect
-                isHandlingRedirect = true;
+                isHandlingRedirect = true; 
                 try {
                     const result = await getRedirectResult(auth);
                     if (result) {
@@ -1248,7 +1248,7 @@
                         handleUserLogout();
                     }
                 });
-                // **********************************
+                // ****** CORREÇÃO LOGIN LOOP (Fim) ******
 
             } catch (error) {
                 console.error("Erro ao inicializar Firebase:", error);
@@ -2375,7 +2375,7 @@ Por favor, analise os dados e responda à pergunta.
         // --- LÓGICA DE MEDIÇÕES ---
         
         /**
-         * Adiciona uma nova medição ao Firestore.
+         * Adiciona um novo silo ao Firestore.
          */
         async function handleAddMedicao(e) {
             e.preventDefault();
@@ -2587,7 +2587,7 @@ Por favor, analise os dados e responda à pergunta.
                     await deleteDoc(doc(classificacoesCol, classId));
                     showToast("Classificação excluída.", "success");
                 } catch (err) {
-                    console.error("Erro ao excluir classificação:", err);
+                    console.error("Erro ao excluir classification:", err);
                     showToast("Erro ao excluir classificação.", "error");
                 }
             }
