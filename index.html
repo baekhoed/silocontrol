@@ -44,10 +44,10 @@
         html {
             font-family: 'Roboto Condensed', sans-serif;
         }
+        
+        /* ATUALIZAÇÃO LOGO: Mantém Oswald como a fonte, mas remove o uppercase/spacing */
         .font-title {
             font-family: 'Oswald', sans-serif;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
         }
         
         /* Define as cores do tema */
@@ -67,6 +67,10 @@
             --color-sidebar-text: #dcfce7; /* green-100 */
             --color-sidebar-hover: #15803d; /* green-700 */
             --color-sidebar-active: #16a34a; /* green-600 */
+            
+            /* ATUALIZAÇÃO LOGO: Novas cores do logo */
+            --color-logo-green: #6a994e; /* Verde do "Silo" */
+            --color-logo-brown: #383226; /* Marrom do "Control" */
         }
 
         /* Aplica as cores */
@@ -205,10 +209,15 @@
 <body class="bg-stone-100 text-stone-800">
 
     <!-- TELA DE LOGIN -->
-    <!-- CORREÇÃO: Aumentado o z-index para z-[100] para garantir a sobreposição -->
+    <!-- CORREÇÃO: Layout (z-index alto) -->
     <div id="login-screen" class="fixed inset-0 flex items-center justify-center bg-green-800 p-4 z-[100]">
         <div class="w-full max-w-md bg-white p-8 rounded-lg shadow-2xl text-center">
-            <h1 class="font-title text-5xl font-semibold text-green-800">SiloControl</h1>
+            
+            <!-- ATUALIZAÇÃO LOGO: Aplicando as cores do logo -->
+            <h1 class="font-title text-5xl font-semibold">
+                <span style="color: var(--color-logo-green);">Silo</span><span style="color: var(--color-logo-brown);">Control</span>
+            </h1>
+            
             <p class="text-stone-600 mt-2 mb-8">Por favor, faça login para continuar.</p>
             <button id="btn-login-google" class="w-full inline-flex justify-center items-center py-3 px-6 border border-gray-300 shadow-sm text-lg font-medium rounded-md text-stone-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
                 <svg class="w-6 h-6 mr-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="m6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.19 4.218-4.199 5.621l6.6 5.238C41.346 34.138 44 27.836 44 20c0-1.341-.138-2.65-.389-3.917z"/></svg>
@@ -230,7 +239,12 @@
             <button id="btn-menu-toggle" class="p-2 text-white">
                 <i data-lucide="menu" class="w-6 h-6"></i>
             </button>
-            <h1 class="font-title text-xl font-semibold text-white">SiloControl</h1>
+            
+            <!-- ATUALIZAÇÃO LOGO: Versão adaptada (clara) para fundo escuro -->
+            <h1 class="font-title text-xl font-semibold">
+                <span style="color: #a7f3d0;">Silo</span><span style="color: #ffffff;">Control</span>
+            </h1>
+            
             <!-- Seletor de Etapas (Mobile) -->
             <div id="etapa-container-mobile" class="hidden flex items-center space-x-2">
                 <select id="select-etapa-mobile" class="h-9 bg-white border border-gray-300 rounded-md shadow-sm pl-2 pr-7 py-1 text-xs font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500">
@@ -250,7 +264,10 @@
                                           flex flex-col space-y-2">
                 <!-- Título no Menu -->
                 <div class="px-2 pb-4 border-b border-green-600">
-                     <h2 class="font-title text-3xl font-semibold text-white">SiloControl</h2>
+                     <!-- ATUALIZAÇÃO LOGO: Versão adaptada (clara) para fundo escuro -->
+                     <h2 class="font-title text-3xl font-semibold">
+                         <span style="color: #a7f3d0;">Silo</span><span style="color: #ffffff;">Control</span>
+                     </h2>
                      <p class="text-xs text-green-200">Controle de medições e qualidade de silos bolsa.</p>
                 </div>
                 
@@ -296,7 +313,10 @@
         <nav id="desktop-sidebar" class="hidden md:flex md:flex-col md:w-64 sidebar-bg sidebar-text p-4 space-y-2 flex-shrink-0 md:h-full overflow-y-auto">
             <!-- Título no Menu -->
             <div class="px-2 pb-4 border-b border-green-600">
-                 <h2 class="font-title text-3xl font-semibold text-white">SiloControl</h2>
+                 <!-- ATUALIZAÇÃO LOGO: Versão adaptada (clara) para fundo escuro -->
+                 <h2 class="font-title text-3xl font-semibold">
+                     <span style="color: #a7f3d0;">Silo</span><span style="color: #ffffff;">Control</span>
+                 </h2>
                  <p class="text-xs text-green-200">Controle de medições e qualidade de silos bolsa.</p>
             </div>
             
@@ -1058,7 +1078,8 @@
         let currentUser = null; // NOVO: Armazena o perfil do usuário
         let isAdmin = false;    // NOVO: Flag de admin
         
-        // CORREÇÃO: Flag para "condição de corrida" (race condition) do login
+        // ****** CORREÇÃO LOGIN LOOP ******
+        // Flag para "condição de corrida" (race condition) do login
         let isHandlingRedirect = false; 
         
         let globalSilos = []; 
@@ -1185,32 +1206,31 @@
                 
                 loadApiKey(); 
                 
-                // CORREÇÃO: Define a flag ANTES de checar o redirect
+                // ****** CORREÇÃO LOGIN LOOP ******
+                // Define a flag ANTES de checar o redirect
                 isHandlingRedirect = true;
                 try {
                     const result = await getRedirectResult(auth);
                     if (result) {
-                        // Login foi bem-sucedido. O onAuthStateChanged
-                        // será disparado em seguida, então não precisamos
-                        // chamar handleUserLogin(result.user) daqui.
+                        // Login foi bem-sucedido.
                         console.log("Login por redirect bem-sucedido:", result.user);
                     }
                 } catch (error) {
-                    // Erros comuns aqui são 'auth/account-exists-with-different-credential'
                     console.error("Erro ao obter resultado do redirect:", error);
                     loginError.textContent = `Erro no login: ${error.message}`;
                 } finally {
-                    // CORREÇÃO: Libera a flag DEPOIS que o redirect terminar
+                    // Libera a flag DEPOIS que o redirect terminar
                     isHandlingRedirect = false;
                 }
 
                 onAuthStateChanged(auth, async (user) => {
-                    // CORREÇÃO: Checa a flag para não deslogar o usuário por engano
+                    // Checa a flag para não deslogar o usuário por engano
                     if (isHandlingRedirect) {
                         console.log("onAuthStateChanged: esperando redirect terminar...");
                         return; 
                     }
                     
+                    // Adiciona try/catch para capturar erros de permissão
                     try {
                         if (user) {
                             // Usuário está logado
@@ -1221,12 +1241,14 @@
                             handleUserLogout();
                         }
                     } catch (error) {
-                        console.error("Erro fatal no onAuthStateChanged:", error);
+                        // Este é o erro que suspeitamos (ex: falha nas Regras de Segurança)
+                        console.error("Erro fatal no onAuthStateChanged (provavelmente Regras de Segurança):", error);
                         loginError.textContent = `Erro crítico de login: ${error.message}`;
                         // Força a UI de logout em caso de erro grave
                         handleUserLogout();
                     }
                 });
+                // **********************************
 
             } catch (error) {
                 console.error("Erro ao inicializar Firebase:", error);
@@ -1241,11 +1263,7 @@
         async function handleGoogleLogin() {
             const provider = new GoogleAuthProvider();
             try {
-                // CORREÇÃO: Troca 'signInWithPopup' por 'signInWithRedirect'
-                // para evitar problemas com bloqueadores de popup.
                 await signInWithRedirect(auth, provider);
-                // A página será recarregada, e o getRedirectResult / onAuthStateChanged
-                // cuidarão do resto.
             } catch (error) {
                 console.error("Erro no login com Google (redirect):", error);
                 loginError.textContent = `Erro no login: ${error.message}`;
@@ -1286,6 +1304,7 @@
             if (!userDoc.exists()) {
                 console.log("Criando novo perfil de usuário...");
                 // Verifica se é o primeiro usuário (para ser admin)
+                // Esta chamada (getDocs) requer a permissão 'list' nas Regras de Segurança
                 const firstUserCheck = await getDocs(query(usersCol, limit(1)));
                 const role = firstUserCheck.empty ? 'admin' : 'user';
                 
@@ -1557,7 +1576,7 @@
                 const btnConfirm = document.getElementById('modal-btn-confirm');
                 btnConfirm.textContent = confirmText;
                 
-                // Aplica a classe de cor correta (padrão é verde, vermelho é passado manually)
+                // Aplica a classe de cor correta (padrão é verde, vermelho é passado manualmente)
                 let baseClass = "py-2 px-4 rounded-md text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2";
                 if (confirmText.toLowerCase() === 'excluir') {
                      btnConfirm.className = `${baseClass} btn-destructive focus:ring-red-500`;
