@@ -1198,56 +1198,57 @@
                 if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
                     throw new Error("Firebase config está faltando apiKey ou projectId.");
                 }
-                
+
                 app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
                 auth = getAuth(app);
                 // setLogLevel('Debug');
-                
-                loadApiKey(); 
-                
-                // ****** CORREÇÃO LOGIN LOOP (Início) ******
-                // Define a flag ANTES de checar o redirect
-                isHandlingRedirect = true; 
-                try {
-                    const result = await getRedirectResult(auth);
-                    if (result) {
-                        // Login foi bem-sucedido.
-                        console.log("Login por redirect bem-sucedido:", result.user);
-                    }
-                } catch (error) {
-                    console.error("Erro ao obter resultado do redirect:", error);
-                    loginError.textContent = `Erro no login: ${error.message}`;
-                } finally {
-                    // Libera a flag DEPOIS que o redirect terminar
-                    isHandlingRedirect = false;
-                }
 
+                loadApiKey();
+
+                // ****** CORREÇÃO LOGIN LOOP (Lógica Robusta v2) ******
+                
+                // 1. Configura o "vigia" PRIMEIRO
                 onAuthStateChanged(auth, async (user) => {
-                    // Checa a flag para não deslogar o usuário por engano
+                    // Se a flag isHandlingRedirect estiver ativa, o "vigia" ignora esta chamada.
+                    // A chamada real acontecerá DEPOIS que getRedirectResult() liberar a flag.
                     if (isHandlingRedirect) {
-                        console.log("onAuthStateChanged: esperando redirect terminar...");
-                        return; 
+                        console.log("onAuthStateChanged: ignorando chamada inicial, esperando redirect terminar...");
+                        return;
                     }
                     
-                    // Adiciona try/catch para capturar erros de permissão
+                    // Processamento normal (após redirect ou em carregamento normal)
                     try {
                         if (user) {
-                            // Usuário está logado
-                            loginError.textContent = '';
                             await handleUserLogin(user);
                         } else {
-                            // Usuário está deslogado
                             handleUserLogout();
                         }
                     } catch (error) {
                         // Este é o erro que suspeitamos (ex: falha nas Regras de Segurança)
                         console.error("Erro fatal no onAuthStateChanged (provavelmente Regras de Segurança):", error);
                         loginError.textContent = `Erro crítico de login: ${error.message}`;
-                        // Força a UI de logout em caso de erro grave
                         handleUserLogout();
                     }
                 });
+
+                // 2. Define a flag ANTES de checar o redirect
+                isHandlingRedirect = true;
+                try {
+                    const result = await getRedirectResult(auth);
+                    if (result) {
+                        // Login foi bem-sucedido.
+                        console.log("Login por redirect bem-sucedido:", result.user);
+                        // O onAuthStateChanged vai disparar sozinho agora que o usuário está pronto.
+                    }
+                } catch (error) {
+                    console.error("Erro ao obter resultado do redirect:", error);
+                    loginError.textContent = `Erro no login: ${error.message}`;
+                } finally {
+                    // 3. Libera a flag DEPOIS que o redirect terminar
+                    // Isso permitirá que a próxima chamada do onAuthStateChanged funcione.
+                    isHandlingRedirect = false;
+                }
                 // ****** CORREÇÃO LOGIN LOOP (Fim) ******
 
             } catch (error) {
@@ -1576,7 +1577,7 @@
                 const btnConfirm = document.getElementById('modal-btn-confirm');
                 btnConfirm.textContent = confirmText;
                 
-                // Aplica a classe de cor correta (padrão é verde, vermelho é passado manualmente)
+                // Aplica a classe de cor correta (padrão é verde, vermelho é passado manually)
                 let baseClass = "py-2 px-4 rounded-md text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2";
                 if (confirmText.toLowerCase() === 'excluir') {
                      btnConfirm.className = `${baseClass} btn-destructive focus:ring-red-500`;
@@ -2224,7 +2225,7 @@ Por favor, analise os dados e responda à pergunta.
             const etapaAtiva = globalEtapas.find(e => e.id === activeEtapaId);
             const confirmed = await showModalConfirm(
                 "Excluir Etapa?",
-                `Atenção: Isso excluirá PERMANENTEMENTE a etapa "${etapaAtiva.nome}" e TODOS os seus dados (silos, medições, classificações).\n\nEsta ação não pode ser desfeita.`,
+                `Atenção: Isso excluirá PERMANENTEMENTE a etapa "${etapaAtiva.nome}" e TODOS os seus dados (silos, medições, classificações).\n\NEsta ação não pode ser desfeita.`,
                 "Excluir",
                 "btn-destructive focus:ring-red-500"
             );
@@ -2291,7 +2292,7 @@ Por favor, analise os dados e responda à pergunta.
             
             const confirmed = await showModalConfirm(
                 "Excluir Silo?",
-                `Deseja excluir o silo "${siloNome}"?\n\nIsso NÃO excluirá as medições ou classificações passadas deste silo.`,
+                `Deseja excluir o silo "${siloNome}"?\n\NIsso NÃO excluirá as medições ou classificações passadas deste silo.`,
                 "Excluir",
                 "btn-destructive focus:ring-red-500"
             );
