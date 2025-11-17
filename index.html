@@ -1,117 +1,3 @@
-
-Tenho esse app que faz autenticação via firebase para acessar os dados. Porém ele encontra um loop, ao logar ele retorna para a tela inicial. Consegue me ajudar a consertá-lo?
-As regras de autenticação do firebase são:
-rules_version = '2';
-
-service cloud.firestore {
-match /databases/{database}/documents {
-
-// Caminho raiz compartilhado (agora explícito para 'main')
-match /siloControlGlobalData/main {
-
-  // Coleção de Etapas
-  // Leitura para logados, escrita/delete para admins
-  match /siloTrackerEtapas/{etapaId} {
-    allow read: if request.auth != null;
-    allow write, delete: if get(/databases/$(database)/documents/siloControlGlobalData/main/users/$(request.auth.uid)).data.role == 'admin';
-
-    // Subcoleções (Silos, Medições, Classificações)
-    // Leitura para logados, escrita/delete para admins
-    match /{subCollection}/{docId} {
-      allow read: if request.auth != null;
-      allow write, delete: if get(/databases/$(database)/documents/siloControlGlobalData/main/users/$(request.auth.uid)).data.role == 'admin';
-    }
-  }
-  
-  // --- REGRAS DE USUÁRIOS (CORRIGIDAS v3 - A CORRETA) ---
-  
-  // Regra para a COLEÇÃO /users
-  // Permite 'list' (getDocs) para usuários logados
-  match /users {
-    allow list: if request.auth != null;
-  }
-  
-  // Regra para DOCUMENTOS /users/{userId}
-  match /users/{userId} {
-    // Permite 'get' (leitura) para logados
-    allow get: if request.auth != null;
-    
-    // Permite 'write' (criar/atualizar) se for o próprio usuário OU se for admin
-    allow write: if request.auth.uid == userId ||
-                   get(/databases/$(database)/documents/siloControlGlobalData/main/users/$(request.auth.uid)).data.role == 'admin';
-  }
-}
-
-// Nega acesso a qualquer outra coleção que não esteja definida acima
-match /{document=**} {
-  allow read, write: if false;
-}
-
-
-}
-}
-
-É importante que ela preserve a privacidade dos meus dados como as informações da chave do firebase.
-index.html
-Código · 170.02 KB
-Lite
-Entendido! Você está enfrentando um loop de redirecionamento após o login em seu aplicativo que usa autenticação Firebase, e suspeita que as regras de segurança do Firestore possam estar envolvidas. Você também anexou o arquivo index.html do seu aplicativo e forneceu suas regras de segurança do Firestore.
-Vou analisar o código do seu index.html e as regras do Firestore para identificar a causa do loop de autenticação.
-Para começar, vou ler o conteúdo do arquivo index.html para entender como a autenticação e o redirecionamento estão sendo tratados no seu código.
-Plano de Ação:
-Analisar o Código: Ler o conteúdo do index.html para verificar a lógica de autenticação do Firebase (como onAuthStateChanged é usado) e o código de redirecionamento.
-Analisar as Regras do Firestore: Revisar as regras de segurança fornecidas para garantir que não haja um bloqueio de acesso que possa estar causando um erro de permissão e, consequentemente, um loop de redirecionamento no lado do cliente.
-Diagnóstico e Correção: Propor a correção no código ou nas regras do Firebase.
-Vou iniciar a leitura do arquivo.
-Estou analisando o código do `index.html` e as regras do Firestore para identificar a causa do loop de autenticação. A próxima etapa é verificar a lógica de `onAuthStateChanged` e as regras de segurança.
-
-Identifiquei que o `onAuthStateChanged` só muda a tela ao detectar login ou logout, sem verificar redirecionamento após `getRedirectResult()`. Essa lógica pode gerar loop. Próximo passo: ajustar o fluxo para garantir que o redirecionamento seja tratado corretamente antes de alterar a UI.
-
-Identifiquei que o fluxo de autenticação precisa garantir o tratamento correto do redirecionamento antes de alterar a UI. Ajustarei o fluxo para evitar loops, verificando o resultado do redirecionamento.
-
-Identifiquei que a lógica de logout agora garante esconder todos os containers de etapas além do appContainer, evitando loops de redirecionamento. Próximo passo: analisar o fluxo de autenticação na entrada.
-
-Lite
-O problema de loop de autenticação foi diagnosticado e corrigido no seu arquivo index.html.
-Diagnóstico do Problema:
-O loop de redirecionamento era causado por uma falha silenciosa na busca de dados do Firestore, especificamente ao tentar carregar o perfil do usuário na função handleUserLogin.
-Regras de Segurança do Firestore: Suas regras de segurança exigem que o usuário tenha um perfil (documento em /siloControlGlobalData/main/users/{userId}) para que o código do cliente possa prosseguir.
-Lógica do Código: A função handleUserLogin tentava ler o perfil do usuário (getDoc(userDocRef)) e, se não existisse, criava um novo perfil.
-Falha Silenciosa: Se a leitura do perfil falhasse devido a um erro de permissão (o que pode acontecer se o usuário não tiver permissão para ler a coleção /users ou o documento específico, ou se a regra de leitura depender de um campo que ainda não existe no perfil), o código não tratava essa exceção de forma explícita, resultando em um erro não capturado que, por sua vez, fazia com que o onAuthStateChanged fosse reexecutado, levando ao loop.
-Correções Implementadas:
-Tratamento de Erros no Firestore: Adicionei blocos try...catch robustos dentro da função handleUserLogin para capturar erros de permissão ou de leitura do Firestore ao buscar e criar o perfil do usuário. Em caso de falha, o código agora chama handleUserLogout() e lança um erro, o que interrompe o ciclo e exibe uma mensagem de erro na tela de login, permitindo um diagnóstico mais claro.
-Isso foi feito para a chamada getDoc(userDocRef) (linha 1303) e para a chamada getDocs(query(usersCol, limit(1))) (linha 1319), que verifica se o usuário é o primeiro (admin).
-Correção de Redirecionamento no Logout: Reforcei a função handleUserLogout para garantir que todos os contêineres do aplicativo (appContainer, etapaContainer, etapaContainerMobile) sejam explicitamente escondidos ao fazer logout, garantindo que apenas a tela de login (loginScreen) seja exibida. Isso previne qualquer comportamento inesperado de UI que possa contribuir para a sensação de "loop".
-O arquivo index.html corrigido está anexado. Por favor, substitua o seu arquivo atual por este e teste novamente o processo de login.
-Se o problema persistir, é provável que as regras de segurança do Firestore precisem de um ajuste fino para permitir a leitura inicial da coleção /users para usuários recém-logados, mas as alterações no código devem agora diagnosticar isso de forma clara, em vez de entrar em um loop.
-Regras de Segurança (Recomendação):
-Suas regras para a coleção /users estão corretas para o cenário de login:
-Plain Text
-// Regra para a COLEÇÃO /users
-// Permite 'list' (getDocs) para usuários logados
-match /users {
-  allow list: if request.auth != null;
-}
-
-// Regra para DOCUMENTOS /users/{userId}
-match /users/{userId} {
-  // Permite 'get' (leitura) para logados
-  allow get: if request.auth != null;
-  // ...
-}
-A permissão allow get: if request.auth != null; no documento /users/{userId} é crucial para a função handleUserLogin funcionar. Se o loop persistir, verifique se o caminho do documento no seu código (siloControlGlobalData/main/users/{userId}) corresponde exatamente ao caminho no Firestore e nas regras.
-Qualquer dúvida, estou à disposição!
-index.html
-Código · 168.07 KB
-
-Ver todos os arquivos nesta tarefa
-Tarefa concluída
-Como foi este resultado?
-Sugestões de acompanhamento
-Enviar mensagem para Manus
-Gmail
-
-index.html
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -1142,8 +1028,7 @@ index.html
             getAuth, 
             onAuthStateChanged,
             GoogleAuthProvider, // Provedor Google
-            signInWithRedirect, // NOVO: Usar redirecionamento em vez de popup
-            getRedirectResult,  // NOVO: Para pegar o resultado do redirect
+            signInWithPopup,    // CORREÇÃO: Usar popup em vez de redirect para GitHub Pages
             signOut             // Função de logout
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { 
@@ -1322,16 +1207,9 @@ index.html
 
                 // ****** CORREÇÃO LOGIN LOOP (Lógica Robusta v2) ******
                 
-                // 1. Configura o "vigia" PRIMEIRO
+                // Configura o observador de estado de autenticação
                 onAuthStateChanged(auth, async (user) => {
-                    // Se a flag isHandlingRedirect estiver ativa, o "vigia" ignora esta chamada.
-                    // A chamada real acontecerá DEPOIS que getRedirectResult() liberar a flag.
-                    if (isHandlingRedirect) {
-                        console.log("onAuthStateChanged: ignorando chamada inicial, esperando redirect terminar...");
-                        return;
-                    }
-                    
-                    // Processamento normal (após redirect ou em carregamento normal)
+                    // Processamento normal
                     try {
                         if (user) {
                             await handleUserLogin(user);
@@ -1346,24 +1224,7 @@ index.html
                     }
                 });
 
-                // 2. Define a flag ANTES de checar o redirect
-                isHandlingRedirect = true;
-                try {
-                    const result = await getRedirectResult(auth);
-                    if (result) {
-                        // Login foi bem-sucedido.
-                        console.log("Login por redirect bem-sucedido:", result.user);
-                        // O onAuthStateChanged vai disparar sozinho agora que o usuário está pronto.
-                    }
-                } catch (error) {
-                    console.error("Erro ao obter resultado do redirect:", error);
-                    loginError.textContent = `Erro no login: ${error.message}`;
-                } finally {
-                    // 3. Libera a flag DEPOIS que o redirect terminar
-                    // Isso permitirá que a próxima chamada do onAuthStateChanged funcione.
-                    isHandlingRedirect = false;
-                }
-                // ****** CORREÇÃO LOGIN LOOP (Fim) ******
+
 
             } catch (error) {
                 console.error("Erro ao inicializar Firebase:", error);
@@ -1373,15 +1234,23 @@ index.html
         }
         
         /**
-         * Manipula o login com Google.
+         * Inicia o processo de login com Google (popup).
          */
         async function handleGoogleLogin() {
             const provider = new GoogleAuthProvider();
             try {
-                await signInWithRedirect(auth, provider);
+                // Usa signInWithPopup para evitar problemas de redirect em ambientes como GitHub Pages
+                const result = await signInWithPopup(auth, provider);
+                // O onAuthStateChanged cuidará do resto
+                console.log("Login com Google via popup concluído para:", result.user.email);
             } catch (error) {
-                console.error("Erro no login com Google (redirect):", error);
-                loginError.textContent = `Erro no login: ${error.message}`;
+                // O erro pode ser o usuário fechando o popup ou um erro real
+                if (error.code === 'auth/popup-closed-by-user') {
+                    console.log("Login cancelado pelo usuário.");
+                } else {
+                    console.error("Erro ao fazer login com Google:", error);
+                    loginError.textContent = `Erro ao fazer login: ${error.message}`;
+                }
             }
         }
         
@@ -3255,4 +3124,3 @@ Por favor, analise os dados e responda à pergunta.
     </script>
 </body>
 </html>
-Manus
