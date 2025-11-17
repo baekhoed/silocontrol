@@ -1239,7 +1239,7 @@
         async function handleGoogleLogin() {
             const provider = new GoogleAuthProvider();
             try {
-                // Usa signInWithPopup para evitar problemas de redirect em ambientes como GitHub Pages
+                // CORREÇÃO FINAL: Usa signInWithPopup para evitar problemas de redirect em ambientes como GitHub Pages
                 const result = await signInWithPopup(auth, provider);
                 // O onAuthStateChanged cuidará do resto
                 console.log("Login com Google via popup concluído para:", result.user.email);
@@ -1295,18 +1295,10 @@
 
             if (!userDoc.exists()) {
                 console.log("Criando novo perfil de usuário...");
-                // Verifica se é o primeiro usuário (para ser admin)
-                // Esta chamada (getDocs) requer a permissão 'list' nas Regras de Segurança
-                let firstUserCheck;
-                try {
-                    firstUserCheck = await getDocs(query(usersCol, limit(1)));
-                } catch (error) {
-                    console.error("ERRO FATAL: Falha ao verificar se é o primeiro usuário (permissão 'list').", error);
-                    // Força o logout para evitar o loop e mostrar a tela de login com erro.
-                    handleUserLogout();
-                    throw new Error("Falha ao verificar primeiro usuário. Verifique as Regras de Segurança.");
-                }
-                const role = firstUserCheck.empty ? 'admin' : 'user';
+                // Define o papel padrão como 'user'.
+                // A lógica de "primeiro usuário" foi removida para evitar falhas de permissão no Firestore.
+                // O primeiro usuário pode ser promovido a admin manualmente no console do Firestore.
+                const role = 'user';
                 
                 userProfile = {
                     email: user.email,
