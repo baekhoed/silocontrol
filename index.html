@@ -5,13 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SiloControl - Controle de Silos</title>
     
+    <!-- Carrega o Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
+    <!-- Carrega os ícones (Lucide) -->
     <script src="https://unpkg.com/lucide@latest"></script>
     
+    <!-- Carrega as Fontes do Google -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
     
     <style>
         /* Estilo para animação de carregamento */
@@ -32,19 +35,19 @@
         }
         
         /* Estilo para a resposta da AI */
-        #ai-response-output p, #ai-report-output p { margin-bottom: 0.75rem; }
-        #ai-response-output ul, #ai-report-output ul { list-style-disc: inside; margin-left: 1rem; margin-bottom: 0.75rem; }
-        #ai-response-output li, #ai-report-output li { margin-bottom: 0.25rem; }
-        #ai-response-output strong, #ai-report-output strong { font-weight: 600; }
+        #ai-response-output p { margin-bottom: 0.75rem; }
+        #ai-response-output ul { list-style-disc: inside; margin-left: 1rem; margin-bottom: 0.75rem; }
+        #ai-response-output li { margin-bottom: 0.25rem; }
+        #ai-response-output strong { font-weight: 600; }
         
         /* Configuração de Fonte e Cores "Agro" */
         html {
             font-family: 'Roboto Condensed', sans-serif;
         }
         
+        /* ATUALIZAÇÃO LOGO: Mantém Oswald como a fonte, mas remove o uppercase/spacing */
         .font-title {
             font-family: 'Oswald', sans-serif;
-            font-weight: 600; /* Peso "Bold" para o Título */
         }
         
         /* Define as cores do tema */
@@ -65,9 +68,9 @@
             --color-sidebar-hover: #15803d; /* green-700 */
             --color-sidebar-active: #16a34a; /* green-600 */
             
-            /* ATUALIZAÇÃO LOGO: Cores mais modernas e alinhadas ao tema */
-            --color-logo-green: #15803d; /* green-700 */
-            --color-logo-brown: #57534e; /* stone-600 */
+            /* ATUALIZAÇÃO LOGO: Novas cores do logo */
+            --color-logo-green: #6a994e; /* Verde do "Silo" */
+            --color-logo-brown: #383226; /* Marrom do "Control" */
         }
 
         /* Aplica as cores */
@@ -130,21 +133,18 @@
             display: inline-flex !important;
         }
         
-        /**
-         * ATUALIZAÇÃO: CSS de Impressão (Refinado)
+        /*
+         * CORREÇÃO PRINT CSS
+         * Regras de impressão simplificadas para corrigir página em branco.
          */
         @media print {
-            /* 1. Esconde UI desnecessária */
-            body > :not(#app-container),
-            #desktop-sidebar, #mobile-sidebar-container, #main-header-mobile, 
-            #main-header-desktop, #sidebar-overlay, #toast-container, 
-            #modal-overlay, #loading-container, .print-button {
+            /* 1. Esconde tudo no body, exceto o container do app */
+            body > :not(#app-container) {
                 display: none !important;
             }
             
-            /* 2. Reseta o layout principal para impressão */
-            #app-container, #main-content, #tab-content, 
-            #content-relatorios, #printable-area {
+            /* 2. Garante que o app container e seu caminho estejam visíveis e sem overflow */
+            #app-container, #main-content, #tab-content, #content-relatorios, #printable-area {
                 display: block !important;
                 visibility: visible !important;
                 width: 100% !important;
@@ -155,111 +155,67 @@
                 box-shadow: none !important;
                 border: none !important;
                 background: #fff !important;
-                color: #000 !important;
             }
             
-            /* 3. Esconde abas de conteúdo que NÃO são o relatório */
+            /* 3. Esconde os elementos de UI (menus, headers, etc) */
+            #desktop-sidebar, #mobile-sidebar-container, #main-header-mobile, #main-header-desktop,
+            #sidebar-overlay, #toast-container, #modal-overlay, #loading-container {
+                display: none !important;
+            }
+            
+            /* 4. Esconde as abas de conteúdo que NÃO são o relatório */
             #tab-content > :not(#content-relatorios) {
                 display: none !important;
             }
             
-            /* 4. Esconde os relatórios que NÃO estão sendo impressos */
+            /* 5. Esconde os relatórios que NÃO estão sendo impressos */
             #printable-area > :not(.printing-report) {
                 display: none !important;
             }
+            .print-button {
+                display: none !important;
+            }
 
-            /* 5. Estiliza o relatório que ESTÁ sendo impresso */
+            /* 6. Estiliza o relatório que ESTÁ sendo impresso */
             .printing-report {
                 display: block !important;
                 visibility: visible !important;
                 width: 100% !important;
-                margin-top: 15px;
+                margin-top: 20px;
                 page-break-inside: avoid;
                 box-shadow: none !important;
                 border: 1px solid #ccc !important;
-                background: #fff !important;
             }
-            
-            /* 6. Estilos de texto e tabela */
-            body { 
-                font-family: Arial, sans-serif; 
-                color: #000; 
-                background: #fff !important;
-            }
-            h2, h3 { 
-                font-size: 14pt; 
-                margin-bottom: 10px; 
-                page-break-after: avoid; 
-                color: #000 !important;
-            }
-            table { 
-                width: 100%; 
-                border-collapse: collapse; 
-                margin-top: 10px; 
-                font-size: 9pt; 
-            }
-            thead { 
-                display: table-header-group; /* Repete cabeçalho em novas páginas */
-                background-color: #f3f4f6 !important; /* Tailwind gray-100 */
-                -webkit-print-color-adjust: exact; /* Força cor de fundo no Chrome */
-                color-adjust: exact; /* Força cor de fundo no Firefox */
-            }
+
+            /* 7. Estilos de texto e tabela (mantidos) */
+            body { font-family: Arial, sans-serif; color: #000; }
+            h2, h3 { font-size: 16pt; margin-bottom: 10px; page-break-after: avoid; }
+            table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 10pt; }
+            thead { display: table-header-group; background-color: #f3f4f6; }
             th, td {
-                padding: 6px 4px;
-                text-align: left;
-                border: 1px solid #ddd !important;
+                padding: 8px 4px; text-align: left; border-top: 1px solid #ddd;
+                border-bottom: 1px solid #ddd; border-left: none; border-right: none;
                 page-break-inside: avoid;
-                color: #000 !important;
             }
-            tr { 
-                page-break-inside: avoid; 
-            }
-            .table-container-scroll { 
-                max-height: none !important; 
-                overflow: visible !important; 
-            }
-            /* Destaques de status */
-            .highlight-sim-print { 
-                font-weight: bold; 
-                background-color: #fde8e8 !important; /* Fundo vermelho claro */
-                -webkit-print-color-adjust: exact;
-                color-adjust: exact;
-            }
-            .status-critico-print {
-                font-weight: bold;
-                background-color: #fde8e8 !important; /* Vermelho */
-                -webkit-print-color-adjust: exact;
-                color-adjust: exact;
-            }
-            .status-atencao-print {
-                font-weight: bold;
-                background-color: #fef9c3 !important; /* Amarelo */
-                -webkit-print-color-adjust: exact;
-                color-adjust: exact;
-            }
-            .status-bom-print {
-                background-color: #f0fdf4 !important; /* Verde */
-                -webkit-print-color-adjust: exact;
-                color-adjust: exact;
-            }
-            /* Limpa cards de resumo */
-            .report-card-print-clean { 
-                background: #fff !important; 
-                border: 1px solid #ccc; 
-            }
-            .report-card-print-clean p, .report-card-print-clean span { 
-                color: #000 !important; 
-            }
+            tr { page-break-inside: avoid; }
+            tbody { color: #000; }
+            .table-container-scroll { max-height: none !important; overflow: visible !important; }
+            .highlight-sim-print { font-weight: bold; background-color: #e5e7eb !important; color: #000 !important; }
+            .report-card-print-clean { background: #fff !important; border: 1px solid #ccc; }
+            .report-card-print-clean p, .report-card-print-clean span { color: #000 !important; }
         }
     </style>
 </head>
 <body class="bg-stone-100 text-stone-800">
 
+    <!-- TELA DE LOGIN -->
+    <!-- CORREÇÃO: Layout (z-index alto) -->
     <div id="login-screen" class="fixed inset-0 flex items-center justify-center bg-green-800 p-4 z-[100]">
         <div class="w-full max-w-md bg-white p-8 rounded-lg shadow-2xl text-center">
             
+            <!-- ATUALIZAÇÃO LOGO: Aplicando as cores do logo -->
             <h1 class="font-title text-5xl font-semibold">
-                <span style="color: var(--color-logo-green);">Silo</span><span style="font-weight: 400; color: var(--color-logo-brown);">Control</span>
+                <span style="color: var(--color-logo-green);">Silo</span><span style="color: var(--color-logo-brown);">Control</span>
             </h1>
             
             <p class="text-stone-600 mt-2 mb-8">Por favor, faça login para continuar.</p>
@@ -271,39 +227,51 @@
         </div>
     </div>
 
+    <!-- Container da Aplicação (Layout Flexível) -->
+    <!-- Agora escondido por padrão, será mostrado após login -->
     <div id="app-container" class="hidden min-h-screen md:flex md:h-screen md:overflow-hidden">
 
+        <!-- Overlay do Menu Mobile -->
         <div id="sidebar-overlay" class="hidden md:hidden fixed inset-0 bg-black bg-opacity-50 z-20"></div>
 
+        <!-- Header Mobile (com botão sanduíche) -->
         <header id="main-header-mobile" class="md:hidden sticky top-0 bg-green-800 shadow-sm z-10 p-4 flex items-center justify-between">
             <button id="btn-menu-toggle" class="p-2 text-white">
                 <i data-lucide="menu" class="w-6 h-6"></i>
             </button>
             
+            <!-- ATUALIZAÇÃO LOGO: Versão adaptada (clara) para fundo escuro -->
             <h1 class="font-title text-xl font-semibold">
-                <span style="color: #a7f3d0;">Silo</span><span style="font-weight: 400; color: #ffffff;">Control</span>
+                <span style="color: #a7f3d0;">Silo</span><span style="color: #ffffff;">Control</span>
             </h1>
             
+            <!-- Seletor de Etapas (Mobile) -->
             <div id="etapa-container-mobile" class="hidden flex items-center space-x-2">
                 <select id="select-etapa-mobile" class="h-9 bg-white border border-gray-300 rounded-md shadow-sm pl-2 pr-7 py-1 text-xs font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500">
-                    </select>
+                    <!-- Etapas carregadas via JS -->
+                </select>
+                <!-- Botão Nova Etapa (Admin) -->
                 <button id="btn-add-etapa-mobile" title="Nova Etapa" class="admin-only-flex h-9 w-9 flex-shrink-0 flex items-center justify-center bg-green-600 text-white rounded-md hover:bg-green-700">
                     <i data-lucide="plus" class="w-5 h-5"></i>
                 </button>
             </div>
         </header>
 
+        <!-- Sidebar Mobile (Deslizante) -->
         <div id="mobile-sidebar-container" class="md:hidden">
             <nav id="mobile-sidebar" class="fixed inset-y-0 left-0 w-64 sidebar-bg sidebar-text p-4 z-30
                                           transform -translate-x-full transition-transform duration-300 ease-in-out
                                           flex flex-col space-y-2">
+                <!-- Título no Menu -->
                 <div class="px-2 pb-4 border-b border-green-600">
+                     <!-- ATUALIZAÇÃO LOGO: Versão adaptada (clara) para fundo escuro -->
                      <h2 class="font-title text-3xl font-semibold">
-                         <span style="color: #a7f3d0;">Silo</span><span style="font-weight: 400; color: #ffffff;">Control</span>
+                         <span style="color: #a7f3d0;">Silo</span><span style="color: #ffffff;">Control</span>
                      </h2>
                      <p class="text-xs text-green-200">Controle de medições e qualidade de silos bolsa.</p>
                 </div>
                 
+                <!-- Links de Navegação Mobile -->
                 <a href="#" id="tab-lancamento-mobile" class="tab-btn-mobile group flex items-center px-3 py-3 text-sm font-medium rounded-md sidebar-hover sidebar-active">
                     <i data-lucide="save" class="mr-3 w-5 h-5"></i> Lançar Medição
                 </a>
@@ -319,11 +287,14 @@
                 <a href="#" id="tab-config-mobile" class="tab-btn-mobile group flex items-center px-3 py-3 text-sm font-medium rounded-md sidebar-hover">
                     <i data-lucide="sliders-horizontal" class="mr-3 w-5 h-5"></i> Configurar Silos
                 </a>
+                <!-- Link de Admin -->
                 <a href="#" id="tab-admin-mobile" class="admin-only-flex tab-btn-mobile group flex items-center px-3 py-3 text-sm font-medium rounded-md sidebar-hover">
                     <i data-lucide="users" class="mr-3 w-5 h-5"></i> Gerenciar Usuários
                 </a>
                 
-                <div class="flex-grow"></div> <div id="user-panel-mobile" class="p-2 mt-4 border-t border-green-700 space-y-3">
+                <!-- Painel do Usuário (Mobile) -->
+                <div class="flex-grow"></div> <!-- Empurra para baixo -->
+                <div id="user-panel-mobile" class="p-2 mt-4 border-t border-green-700 space-y-3">
                     <div class="flex items-center space-x-2">
                         <img id="user-avatar-mobile" src="https://placehold.co/40x40/dcfce7/166534?text=?" class="w-8 h-8 rounded-full">
                         <div>
@@ -338,14 +309,18 @@
             </nav>
         </div>
 
+        <!-- Sidebar Desktop (Fixa) -->
         <nav id="desktop-sidebar" class="hidden md:flex md:flex-col md:w-64 sidebar-bg sidebar-text p-4 space-y-2 flex-shrink-0 md:h-full overflow-y-auto">
+            <!-- Título no Menu -->
             <div class="px-2 pb-4 border-b border-green-600">
+                 <!-- ATUALIZAÇÃO LOGO: Versão adaptada (clara) para fundo escuro -->
                  <h2 class="font-title text-3xl font-semibold">
-                     <span style="color: #a7f3d0;">Silo</span><span style="font-weight: 400; color: #ffffff;">Control</span>
+                     <span style="color: #a7f3d0;">Silo</span><span style="color: #ffffff;">Control</span>
                  </h2>
                  <p class="text-xs text-green-200">Controle de medições e qualidade de silos bolsa.</p>
             </div>
             
+            <!-- Links de Navegação Desktop -->
             <a href="#" id="tab-lancamento-desktop" class="tab-btn-desktop group flex items-center px-3 py-3 text-sm font-medium rounded-md sidebar-hover sidebar-active">
                 <i data-lucide="save" class="mr-3 w-5 h-5"></i> Lançar Medição
             </a>
@@ -361,17 +336,21 @@
             <a href="#" id="tab-config-desktop" class="tab-btn-desktop group flex items-center px-3 py-3 text-sm font-medium rounded-md sidebar-hover">
                 <i data-lucide="sliders-horizontal" class="mr-3 w-5 h-5"></i> Configurar Silos
             </a>
+            <!-- Link de Admin -->
             <a href="#" id="tab-admin-desktop" class="admin-only-flex tab-btn-desktop group flex items-center px-3 py-3 text-sm font-medium rounded-md sidebar-hover">
                 <i data-lucide="users" class="mr-3 w-5 h-5"></i> Gerenciar Usuários
             </a>
             
+            <!-- Espaçador -->
             <div class="flex-grow"></div>
             
+            <!-- Status de Carregamento (no sidebar) -->
             <div id="loading-container" class="flex flex-col items-center justify-center py-6 text-green-200">
                 <i data-lucide="loader" class="w-8 h-8 loader"></i>
                 <p id="loading-message" class="mt-2 text-sm">Carregando...</p>
             </div>
             
+            <!-- Painel do Usuário (Desktop) -->
             <div id="user-panel-desktop" class="p-2 border-t border-green-700 space-y-3">
                 <div class="flex items-center space-x-3">
                     <img id="user-avatar-desktop" src="https://placehold.co/40x40/dcfce7/166534?text=?" class="w-10 h-10 rounded-full">
@@ -386,13 +365,18 @@
             </div>
         </nav>
 
+        <!-- Área de Conteúdo Principal -->
         <div class="flex-1 flex flex-col h-full">
         
+            <!-- Header Desktop (Apenas Seletor de Etapa) -->
             <header id="main-header-desktop" class="hidden md:flex sticky top-0 bg-green-800 shadow-sm z-10 p-4 items-center justify-end flex-shrink-0">
+                <!-- Seletor de Etapas (Desktop) -->
                 <div id="etapa-container" class="hidden flex items-center space-x-2">
                     <label for="select-etapa" class="block text-sm font-medium text-green-100">Etapa Atual:</label>
                     <select id="select-etapa" class="h-10 bg-white border border-gray-300 rounded-md shadow-sm pl-3 pr-8 py-2 text-sm font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500">
-                        </select>
+                        <!-- Etapas carregadas via JS -->
+                    </select>
+                    <!-- Botões Admin -->
                     <button id="btn-add-etapa" title="Nova Etapa" class="admin-only-flex h-10 w-10 flex items-center justify-center bg-green-600 text-white rounded-md hover:bg-green-700">
                         <i data-lucide="plus" class="w-5 h-5"></i>
                     </button>
@@ -402,9 +386,12 @@
                 </div>
             </header>
 
+            <!-- Conteúdo Principal (Abas) -->
             <main id="main-content" class="hidden p-4 md:p-6 flex-1 overflow-y-auto">
                 
+                <!-- ABA 1: Lançamento -->
                 <div id="content-lancamento" class="tab-content-panel space-y-6">
+                    <!-- Lançar Nova Medição (Admin Only) -->
                     <div class="admin-only bg-white p-6 rounded-lg shadow-lg border border-gray-200">
                         <h2 class="text-xl font-semibold text-green-800 mb-4">Lançar Nova Medição</h2>
                         <form id="form-medicao" class="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -439,6 +426,7 @@
                         </form>
                     </div>
 
+                    <!-- Buscar/Excluir Medição -->
                     <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
                         <h2 class="text-xl font-semibold text-green-800 mb-4">Buscar Medições</h2>
                         
@@ -490,7 +478,9 @@
                     </div>
                 </div>
 
+                <!-- ABA 2: Lançar Classificação -->
                 <div id="content-classificacao" class="tab-content-panel hidden space-y-6">
+                    <!-- Formulário (Admin Only) -->
                     <div class="admin-only bg-white p-6 rounded-lg shadow-lg border border-gray-200">
                         <h2 class="text-xl font-semibold text-green-800 mb-4">Lançar Nova Classificação</h2>
                         <form id="form-classificacao">
@@ -590,6 +580,7 @@
                         </form>
                     </div>
                     
+                    <!-- Mensagem para usuários "read-only" -->
                     <div class="non-admin-message bg-amber-100 p-4 rounded-lg shadow border border-amber-200">
                         <div class="flex items-center">
                             <i data-lucide="info" class="w-5 h-5 text-amber-700 mr-3 flex-shrink-0"></i>
@@ -598,11 +589,13 @@
                     </div>
                 </div>
 
+                <!-- ABA 3: Relatórios -->
                 <div id="content-relatorios" class="tab-content-panel hidden space-y-6">
                     <div id="printable-area">
+                        <!-- Relatório 1: Resumo Geral -->
                         <div id="report-resumo" class="printable-report bg-white p-6 rounded-lg shadow-lg border border-gray-200">
                             <div class="flex justify-between items-center mb-4">
-                                <h2 class="text-xl font-semibold text-green-800">Resumo Geral (Silos Ativos > 0m)</h2>
+                                <h2 class="text-xl font-semibold text-green-800">Resumo Geral</h2>
                                 <button onclick="printReport('report-resumo')" class="print-button p-2 text-gray-500 hover:text-green-600">
                                     <i data-lucide="printer" class="w-5 h-5"></i>
                                 </button>
@@ -656,7 +649,7 @@
 
                         <div id="report-status" class="printable-report bg-white p-6 rounded-lg shadow-lg border border-gray-200">
                             <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-4">
-                                <h2 class="text-xl font-semibold text-green-800">Status Atual por Silo (Apenas > 0m)</h2>
+                                <h2 class="text-xl font-semibold text-green-800">Status Atual por Silo</h2>
                                 <div class="flex items-center space-x-2 mt-2 md:mt-0">
                                     <select id="report-status-filter" class="w-auto px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
                                         <option value="Todos">Todos Produtos</option>
@@ -757,22 +750,6 @@
                             </div>
                         </div>
                         
-                        <div id="ai-report-summary" class="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
-                            <div class="flex justify-between items-center mb-4">
-                                <h2 class="text-xl font-semibold text-green-800">Análise Rápida de Saúde (AI)</h2>
-                                <button id="btn-run-ai-report" class="print-button inline-flex items-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white btn-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500">
-                                    <i data-lucide="sparkles" class="w-4 h-4 mr-2"></i> Gerar Análise de Saúde
-                                </button>
-                            </div>
-                            <div id="ai-report-loading-spinner" class="hidden flex flex-col items-center justify-center text-gray-500">
-                                <i data-lucide="loader" class="w-8 h-8 loader"></i>
-                                <p class="mt-2 text-sm">Analisando dados de classificação...</p>
-                            </div>
-                            <div id="ai-report-output" class="text-stone-700 prose prose-sm max-w-none">
-                                <p id="ai-report-placeholder" class="text-gray-500">Clique no botão acima para gerar um resumo da saúde dos silos com base nas últimas classificações.</p>
-                            </div>
-                        </div>
-                        
                         <div id="report-classificacao" class="printable-report bg-white p-6 rounded-lg shadow-lg border border-gray-200">
                             <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-4">
                                 <h2 class="text-xl font-semibold text-green-800">Histórico de Classificações</h2>
@@ -787,10 +764,10 @@
                                     </button>
                                 </div>
                             </div>
-                            <div class="overflow-x-auto table-container-scroll max-h-[600px]"> <table class="min-w-full">
+                            <div class="overflow-x-auto table-container-scroll max-h-96">
+                                <table class="min-w-full">
                                     <thead class="bg-gray-50 sticky top-0">
                                         <tr>
-                                            <th class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                                             <th class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Silo</th>
                                             <th class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data</th>
                                             <th class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Umidade</th>
@@ -798,25 +775,27 @@
                                             <th class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Avariados</th>
                                             <th class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quebrados</th>
                                             <th class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Insetos</th>
-                                            <th class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status Ins.</th>
+                                            <th class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                                             <th class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mofados</th>
                                             <th class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fermentados</th>
                                             <th class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Odor</th>
-                                            <th class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Milho(Sorgo)</th>
-                                            <th class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sorgo(Milho)</th>
+                                            <th class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Milho (no Sorgo)</th>
+                                            <th class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sorgo (no Milho)</th>
                                             <th class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">C. Viola</th>
                                             <th class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">S. Ralepense</th>
                                             <th class="px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider admin-only">Ação</th>
                                         </tr>
                                     </thead>
                                     <tbody id="report-table-classificacao" class="bg-white divide-y divide-gray-200">
-                                        <tr><td colspan="17" class="px-6 py-4 text-center text-gray-500">Nenhuma classificação encontrada.</td></tr>
+                                        <tr><td colspan="16" class="px-6 py-4 text-center text-gray-500">Nenhuma classificação encontrada.</td></tr>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                         
-                    </div> <div id="report-export" class="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
+                    </div> <!-- Fim #printable-area -->
+
+                    <div id="report-export" class="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
                         <h2 class="text-xl font-semibold text-green-800 mb-4">Exportar Dados (CSV)</h2>
                         <div class="flex flex-wrap gap-3">
                             <button id="btn-export-medicoes" class="inline-flex items-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md btn-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
@@ -826,12 +805,13 @@
                                 <i data-lucide="sheet" class="w-4 h-4 mr-2"></i> Exportar Classificações
                             </button>
                             <button id="btn-export-status" class="inline-flex items-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md btn-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                                <i data-lucide="sheet" class="w-4 h-4 mr-2"></i> Exportar Status Atual (> 0m)
+                                <i data-lucide="sheet" class="w-4 h-4 mr-2"></i> Exportar Status Atual
                             </button>
                         </div>
                     </div>
                 </div>
                 
+                <!-- ABA 5: Análise AI (NOVA) -->
                 <div id="content-ai" class="tab-content-panel hidden space-y-6">
                     <div id="ai-api-key-container" class="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
                         <h2 class="text-xl font-semibold text-green-800 mb-4">Configurar Análise AI</h2>
@@ -845,25 +825,25 @@
                     </div>
                     
                     <div id="ai-quick-prompts" class="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
-                        <h2 class="text-xl font-semibold text-green-800 mb-4">Análises Rápidas (Silos Ativos)</h2>
+                        <h2 class="text-xl font-semibold text-green-800 mb-4">Análises Rápidas</h2>
                         <div class="flex flex-wrap gap-3">
                             <button class="ai-prompt-btn py-2 px-4 rounded-md text-sm font-medium btn-ai-prompt"
-                                data-prompt="Gere um resumo executivo da situação atual dos silos ativos, destacando o estoque total por produto e quaisquer pontos de atenção imediatos com base nas classificações (umidade, insetos).">
+                                data-prompt="Gere um resumo executivo da situação atual dos silos, destacando o estoque total por produto e quaisquer pontos de atenção imediatos com base nas classificações (umidade, insetos).">
                                 Resumo Executivo da Etapa
                             </button>
                              <button class="ai-prompt-btn py-2 px-4 rounded-md text-sm font-medium btn-ai-prompt"
-                                data-prompt="Analise os dados de classificação dos silos ativos e liste todos os 'Silos Críticos' que precisam de atenção. Um silo é crítico se tiver 'Insetos' = Sim, 'Mofados' = Sim, ou 'Umidade' acima de 14.5%. Liste o silo e o motivo.">
+                                data-prompt="Analise os dados de classificação e liste todos os 'Silos Críticos' que precisam de atenção. Um silo é crítico se tiver 'Insetos' = Sim, 'Mofados' = Sim, ou 'Umidade' acima de 14%. Liste o silo e o motivo.">
                                 Encontrar Silos Críticos
                             </button>
                              <button class="ai-prompt-btn py-2 px-4 rounded-md text-sm font-medium btn-ai-prompt"
-                                data-prompt="Com base nos dados de medição dos silos ativos, quais 3 silos tiveram a maior variação (positiva ou negativa) nos últimos 7 dias?">
+                                data-prompt="Com base nos dados de medição, quais 3 silos tiveram a maior variação (positiva ou negativa) nos últimos 7 dias?">
                                 Maior Movimentação (Últ. 7 dias)
                             </button>
                         </div>
                     </div>
                     
                     <div id="ai-custom-prompt-container" class="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
-                        <h2 class="text-xl font-semibold text-green-800 mb-4">Faça sua Pergunta (Silos Ativos)</h2>
+                        <h2 class="text-xl font-semibold text-green-800 mb-4">Faça sua Pergunta</h2>
                         <form id="ai-custom-prompt-form" class="flex items-center space-x-2">
                             <input type="text" id="ai-custom-prompt-input" placeholder="Ex: Quais silos de milho estão com umidade acima de 13.5%?" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
                             <button type="submit" class="py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white btn-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500">
@@ -884,8 +864,10 @@
                     </div>
                 </div>
 
+                <!-- ABA 6: Configurar Silos (Movida) -->
                 <div id="content-config" class="tab-content-panel hidden space-y-6">
                     
+                    <!-- Seção Admin-Only -->
                     <div class="admin-only space-y-6">
                         <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-200 space-y-6">
                             <div>
@@ -946,13 +928,17 @@
                                 </div>
                             </form>
                         </div>
-                    </div> <div class="non-admin-message bg-amber-100 p-4 rounded-lg shadow border border-amber-200">
+                    </div> <!-- Fim .admin-only -->
+                    
+                    <!-- Mensagem para usuários "read-only" -->
+                    <div class="non-admin-message bg-amber-100 p-4 rounded-lg shadow border border-amber-200">
                         <div class="flex items-center">
                             <i data-lucide="info" class="w-5 h-5 text-amber-700 mr-3 flex-shrink-0"></i>
                             <p class="text-sm text-amber-800">Você está no modo "Somente Leitura". Apenas administradores podem configurar silos ou importar dados.</p>
                         </div>
                     </div>
 
+                    <!-- Tabela de Silos (Visível para todos) -->
                     <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
                         <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-4">
                             <h2 class="text-xl font-semibold text-green-800">Silos Cadastrados</h2>
@@ -983,6 +969,7 @@
                     </div>
                 </div>
                 
+                <!-- ABA 7: Gerenciar Usuários (Admin Only) -->
                 <div id="content-admin" class="tab-content-panel hidden space-y-6">
                     <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
                         <h2 class="text-xl font-semibold text-green-800 mb-4">Painel de Administração</h2>
@@ -998,6 +985,7 @@
                                     </tr>
                                 </thead>
                                 <tbody id="admin-user-list-body" class="bg-white divide-y divide-gray-200">
+                                    <!-- Usuários carregados via JS -->
                                     <tr><td colspan="3" class="px-6 py-4 text-center text-gray-500">Carregando usuários...</td></tr>
                                 </tbody>
                             </table>
@@ -1007,9 +995,14 @@
 
 
             </main>
-        </div> <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2">
-            </div>
+        </div> <!-- Fim .flex-1 (Main Content Area) -->
 
+        <!-- Toast de Notificação (Container) -->
+        <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2">
+            <!-- Toasts são adicionados here via JS -->
+        </div>
+
+        <!-- Modal de Confirmação (Genérico) -->
         <div id="modal-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40 flex items-center justify-center p-4">
             <div id="modal-box" class="bg-white p-6 rounded-lg shadow-xl z-50 max-w-sm w-full mx-4">
                 <h3 id="modal-title" class="text-lg font-bold text-stone-800 mb-4">Confirmar Ação</h3>
@@ -1025,15 +1018,18 @@
             </div>
         </div>
 
-    </div> <script type="module">
+    </div> <!-- Fim #app-container -->
+
+    <!-- Scripts Firebase (Módulos) -->
+    <script type="module">
         // Importações do Firebase SDK
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { 
             getAuth, 
             onAuthStateChanged,
-            GoogleAuthProvider,
-            signInWithPopup,
-            signOut
+            GoogleAuthProvider, // Provedor Google
+            signInWithPopup,    // CORREÇÃO: Usar popup em vez de redirect para GitHub Pages
+            signOut             // Função de logout
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { 
             getFirestore, 
@@ -1045,13 +1041,13 @@
             query,
             orderBy,
             setDoc,
-            getDoc,
+            getDoc, // NOVO: Para buscar doc de usuário
             getDocs,
             where,
             writeBatch,
             serverTimestamp,
             Timestamp,
-            limit,
+            limit, // NOVO: Para checar primeiro usuário
             setLogLevel
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
@@ -1074,25 +1070,28 @@
         // --- Caminhos das Coleções (Dinâmicos) ---
         let rootDocRef; // Documento 'main'
         let etapasCol; 
-        let usersCol;
+        let usersCol; // NOVO: Coleção de usuários
         let silosCol, medicoesCol, classificacoesCol;
         
         // Estado da Aplicação
-        let currentUser = null;
-        let isAdmin = false;
+        let currentUser = null; // NOVO: Armazena o perfil do usuário
+        let isAdmin = false;    // NOVO: Flag de admin
+        
+        // ****** CORREÇÃO LOGIN LOOP ******
+        // Flag para "condição de corrida" (race condition) do login
         let isHandlingRedirect = false; 
         
         let globalSilos = []; 
         let globalMedicoes = []; 
         let globalClassificacoes = []; 
         let globalEtapas = []; 
-        let globalUsers = [];
+        let globalUsers = []; // NOVO: Para painel admin
         let activeEtapaId = null;
         let unsubEtapas = () => {};
         let unsubSilos = () => {}; 
         let unsubMedicoes = () => {}; 
         let unsubClassificacoes = () => {}; 
-        let unsubUsers = () => {};
+        let unsubUsers = () => {}; // NOVO
 
         let stickyProduto = "";
         let stickyData = getTodayDateString();
@@ -1107,12 +1106,14 @@
         const loadingMessage = document.getElementById('loading-message');
         const mainContent = document.getElementById('main-content');
         
+        // Elementos Menu/Layout
         const btnMenuToggle = document.getElementById('btn-menu-toggle');
         const sidebarOverlay = document.getElementById('sidebar-overlay');
         const mobileSidebar = document.getElementById('mobile-sidebar');
         const desktopNav = document.getElementById('desktop-sidebar');
         const mobileNav = document.getElementById('mobile-sidebar');
         
+        // Elementos Etapas (Duplicados)
         const etapaContainer = document.getElementById('etapa-container');
         const selectEtapa = document.getElementById('select-etapa');
         const btnAddEtapa = document.getElementById('btn-add-etapa');
@@ -1122,6 +1123,7 @@
         const selectEtapaMobile = document.getElementById('select-etapa-mobile');
         const btnAddEtapaMobile = document.getElementById('btn-add-etapa-mobile');
 
+        // Elementos Forms
         const formSilo = document.getElementById('form-silo');
         const formMedicao = document.getElementById('form-medicao');
         const formClassificacao = document.getElementById('form-classificacao');
@@ -1169,9 +1171,11 @@
         const modalOverlay = document.getElementById('modal-overlay');
         let modalResolve = null; 
         
+        // Seletores Painel Usuário
         const userPanels = [document.getElementById('user-panel-desktop'), document.getElementById('user-panel-mobile')];
         const btnLogouts = [document.getElementById('btn-logout-desktop'), document.getElementById('btn-logout-mobile')];
         
+        // Seletores Admin
         const adminUserListBody = document.getElementById('admin-user-list-body');
         
         // Seletores AI
@@ -1184,12 +1188,6 @@
         const aiCustomPromptForm = document.getElementById('ai-custom-prompt-form');
         const aiCustomPromptInput = document.getElementById('ai-custom-prompt-input');
         const GEMINI_API_KEY_NAME = 'siloTrackerGeminiApiKey';
-        
-        // NOVO: Seletores AI na aba Relatórios
-        const btnRunAiReport = document.getElementById('btn-run-ai-report');
-        const aiReportLoadingSpinner = document.getElementById('ai-report-loading-spinner');
-        const aiReportOutput = document.getElementById('ai-report-output');
-        const aiReportPlaceholder = document.getElementById('ai-report-placeholder');
 
         /**
          * Inicializa o Firebase e configura a autenticação.
@@ -1206,8 +1204,12 @@
                 // setLogLevel('Debug');
 
                 loadApiKey();
+
+                // ****** CORREÇÃO LOGIN LOOP (Lógica Robusta v2) ******
                 
+                // Configura o observador de estado de autenticação
                 onAuthStateChanged(auth, async (user) => {
+                    // Processamento normal
                     try {
                         if (user) {
                             await handleUserLogin(user);
@@ -1215,11 +1217,15 @@
                             handleUserLogout();
                         }
                     } catch (error) {
+                        // Este é o erro que suspeitamos (ex: falha nas Regras de Segurança)
                         console.error("Erro fatal no onAuthStateChanged (provavelmente Regras de Segurança):", error);
                         loginError.textContent = `Erro crítico de login: ${error.message}`;
                         handleUserLogout();
                     }
                 });
+
+
+
             } catch (error) {
                 console.error("Erro ao inicializar Firebase:", error);
                 loginScreen.classList.remove('hidden');
@@ -1233,9 +1239,12 @@
         async function handleGoogleLogin() {
             const provider = new GoogleAuthProvider();
             try {
+                // CORREÇÃO FINAL: Usa signInWithPopup para evitar problemas de redirect em ambientes como GitHub Pages
                 const result = await signInWithPopup(auth, provider);
+                // O onAuthStateChanged cuidará do resto
                 console.log("Login com Google via popup concluído para:", result.user.email);
             } catch (error) {
+                // O erro pode ser o usuário fechando o popup ou um erro real
                 if (error.code === 'auth/popup-closed-by-user') {
                     console.log("Login cancelado pelo usuário.");
                 } else {
@@ -1251,6 +1260,7 @@
         async function handleLogout() {
             try {
                 await signOut(auth);
+                // O onAuthStateChanged vai cuidar do resto
             } catch (error) {
                 console.error("Erro ao sair:", error);
                 showToast("Erro ao tentar sair.", "error");
@@ -1259,20 +1269,24 @@
 
         /**
          * Chamado quando um usuário é autenticado (onAuthStateChanged).
+         * Busca/cria o perfil do usuário e inicia os listeners.
          */
         async function handleUserLogin(user) {
             console.log('Usuário autenticado:', user.uid, user.email);
             
+            // Define os caminhos base (agora globais)
             rootDocRef = doc(db, 'siloControlGlobalData', 'main');
             usersCol = collection(rootDocRef, 'users');
             etapasCol = collection(rootDocRef, 'siloTrackerEtapas'); 
 
+            // Busca ou cria o perfil do usuário
             const userDocRef = doc(usersCol, user.uid);
             let userDoc;
             try {
                 userDoc = await getDoc(userDocRef);
             } catch (error) {
-                console.error("ERRO FATAL: Falha ao buscar o perfil do usuário no Firestore.", error);
+                console.error("ERRO FATAL: Falha ao buscar o perfil do usuário no Firestore. Isso pode ser um problema de Regras de Segurança.", error);
+                // Força o logout para evitar o loop e mostrar a tela de login com erro.
                 handleUserLogout();
                 throw new Error("Falha ao carregar perfil. Verifique as Regras de Segurança.");
             }
@@ -1281,7 +1295,10 @@
 
             if (!userDoc.exists()) {
                 console.log("Criando novo perfil de usuário...");
-                const role = 'user'; // Padrão
+                // Define o papel padrão como 'user'.
+                // A lógica de "primeiro usuário" foi removida para evitar falhas de permissão no Firestore.
+                // O primeiro usuário pode ser promovido a admin manualmente no console do Firestore.
+                const role = 'user';
                 
                 userProfile = {
                     email: user.email,
@@ -1297,17 +1314,21 @@
                 console.log(`Usuário carregado com role: ${userProfile.role}`);
             }
             
+            // Define o estado global
             currentUser = userProfile;
             isAdmin = currentUser.role === 'admin';
             
+            // Atualiza a UI com base na permissão
             updateUiForPermissions();
             renderUserPanel();
             
+            // Inicia os listeners de dados
             setupEtapaListener();
             if (isAdmin) {
                 setupAdminListeners();
             }
 
+            // Mostra o app e esconde o login
             loginScreen.classList.add('hidden');
             appContainer.classList.remove('hidden');
             etapaContainer.classList.remove('hidden');
@@ -1316,10 +1337,12 @@
         
         /**
          * Chamado quando o usuário faz logout (onAuthStateChanged).
+         * Limpa o estado e mostra a tela de login.
          */
         function handleUserLogout() {
             console.log("Usuário deslogado.");
             
+            // Limpa o estado global
             currentUser = null;
             isAdmin = false;
             globalSilos = []; 
@@ -1329,14 +1352,18 @@
             globalUsers = [];
             activeEtapaId = null;
 
+            // Para todos os listeners
             unsubEtapas();
             unsubSilos();
             unsubMedicoes();
             unsubClassificacoes();
             unsubUsers();
             
-            updateUiForPermissions();
+            // Reseta a UI
+            updateUiForPermissions(); // Remove a classe 'user-is-admin'
             
+            // Esconde o app e mostra o login
+            // Garante que o appContainer e os elementos de etapa sejam escondidos
             appContainer.classList.add('hidden');
             etapaContainer.classList.add('hidden');
             etapaContainerMobile.classList.add('hidden');
@@ -1356,7 +1383,9 @@
                 panel.querySelector('p[id^="user-email"]').textContent = currentUser.email;
             });
             
+            // Adiciona listeners de logout (feito aqui para garantir que existem)
             btnLogouts.forEach(btn => {
+                // Remove listener antigo para evitar duplicação
                 const newBtn = btn.cloneNode(true);
                 btn.parentNode.replaceChild(newBtn, btn);
                 newBtn.addEventListener('click', handleLogout);
@@ -1369,11 +1398,15 @@
         function updateUiForPermissions() {
             if (isAdmin) {
                 document.body.classList.add('user-is-admin');
+                // Mostra formulários (que podem estar escondidos por padrão)
                 document.querySelectorAll('.non-admin-message').forEach(el => el.classList.add('hidden'));
             } else {
                 document.body.classList.remove('user-is-admin');
+                // Esconde formulários e mostra mensagens de "somente leitura"
                  document.querySelectorAll('.non-admin-message').forEach(el => el.classList.remove('hidden'));
             }
+            // A renderização das tabelas (com botões de delete) será chamada
+            // pelos listeners, e os botões serão controlados via CSS (.admin-only)
         }
 
         /**
@@ -1381,6 +1414,7 @@
          */
         function defineCollectionPaths(etapaId = null) {
             if (!rootDocRef) {
+                 // Define os caminhos base (se handleUserLogin não o fez)
                 rootDocRef = doc(db, 'siloControlGlobalData', 'main');
                 usersCol = collection(rootDocRef, 'users');
                 etapasCol = collection(rootDocRef, 'siloTrackerEtapas'); 
@@ -1400,6 +1434,7 @@
         }
 
         function setupEtapaListener() {
+            // Cancela listener anterior
             unsubEtapas();
             
             unsubEtapas = onSnapshot(query(etapasCol, orderBy("nome")), async (snapshot) => {
@@ -1408,12 +1443,14 @@
                 
                 if (globalEtapas.length === 0) {
                     loadingMessage.textContent = "Nenhuma etapa encontrada.";
+                    // Apenas admins podem criar a primeira etapa
                     if (isAdmin) {
                         loadingMessage.textContent = "Configurando primeira etapa...";
                         await createFirstEtapa();
                     }
                 } else {
                     renderEtapaSelect();
+                    // Tenta manter a etapa ativa, senão usa a primeira
                     const currentActiveEtapaId = globalEtapas.find(e => e.id === activeEtapaId) ? activeEtapaId : globalEtapas[0].id;
                     setActiveEtapa(currentActiveEtapaId);
                     
@@ -1444,18 +1481,26 @@
          * Navegação por Abas (Lógica de Menu)
          */
         window.showTab = (tabId) => {
+            // 1. Esconde todos os painéis
             document.querySelectorAll('.tab-content-panel').forEach(panel => panel.classList.add('hidden'));
+            
+            // 2. Remove classe ativa de todos os botões (desktop e mobile)
             document.querySelectorAll('.tab-btn-desktop, .tab-btn-mobile').forEach(btn => {
                 btn.classList.remove('sidebar-active');
                 btn.classList.add('sidebar-hover');
             });
             
+            // 3. Mostra o painel correto
             document.getElementById(`content-${tabId}`).classList.remove('hidden');
+            
+            // 4. Adiciona classe ativa aos botões correspondentes (desktop e mobile)
             document.getElementById(`tab-${tabId}-desktop`).classList.add('sidebar-active');
             document.getElementById(`tab-${tabId}-mobile`).classList.add('sidebar-active');
             
+            // 5. Fecha o menu mobile se estiver aberto
             closeMobileMenu();
             
+            // 6. Recarrega dados/ícones se necessário
             if (tabId === 'relatorios') {
                 updateAllReports();
                 renderClassificacaoReport();
@@ -1466,8 +1511,12 @@
             if (tabId === 'lancamento') {
                 renderUltimasMedicoes();
             }
+            if (tabId === 'admin') {
+                // O listener (setupAdminListeners) já está populando a tabela
+            }
             
             lucide.createIcons();
+            // Atualiza permissões (para botões dinâmicos)
             updateUiForPermissions();
         }
         
@@ -1485,9 +1534,9 @@
             const id = `toast-${Date.now()}`;
             const toastContainer = document.getElementById('toast-container');
             
-            let bgColor = 'bg-green-600';
+            let bgColor = 'bg-green-600'; // Cor primária (verde)
             if (type === 'error') {
-                bgColor = 'bg-red-600';
+                bgColor = 'bg-red-600'; // Cor destrutiva (vermelho)
             }
             
             const toast = document.createElement('div');
@@ -1522,6 +1571,7 @@
                 const btnConfirm = document.getElementById('modal-btn-confirm');
                 btnConfirm.textContent = confirmText;
                 
+                // Aplica a classe de cor correta (padrão é verde, vermelho é passado manually)
                 let baseClass = "py-2 px-4 rounded-md text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2";
                 if (confirmText.toLowerCase() === 'excluir') {
                      btnConfirm.className = `${baseClass} btn-destructive focus:ring-red-500`;
@@ -1532,3 +1582,1537 @@
                 modalOverlay.classList.remove('hidden');
             });
         }
+        
+        document.getElementById('modal-btn-cancel').addEventListener('click', () => {
+            modalOverlay.classList.add('hidden');
+            if (modalResolve) modalResolve(false);
+        });
+        document.getElementById('modal-btn-confirm').addEventListener('click', () => {
+            modalOverlay.classList.add('hidden');
+            if (modalResolve) modalResolve(true);
+        });
+
+        
+        function getTodayDateString() {
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            return `${yyyy}-${mm}-${dd}`;
+        }
+        
+        function formatarData(dataStr) {
+            if (!dataStr || dataStr.length < 10) return dataStr;
+            const [ano, mes, dia] = dataStr.split('-');
+            if (!dia || !mes || !ano) return dataStr;
+            return `${dia}/${mes}/${ano}`;
+        }
+        
+        function formatarDataParaISO(dataStr) {
+            if (!dataStr || dataStr.length < 10) return null;
+            const [dia, mes, ano] = dataStr.split('/');
+            if (!dia || !mes || !ano || ano.length !== 4) return null;
+            return `${ano}-${mes}-${dia}`;
+        }
+
+        function formatarMes(mesStr) {
+            if (!mesStr || mesStr.length < 7) return mesStr;
+            const [ano, mes] = mesStr.split('-');
+            return `${mes}/${ano}`;
+        }
+        
+        window.printReport = (reportId) => {
+            document.querySelectorAll('.printable-report').forEach(el => {
+                el.classList.remove('printing-report');
+            });
+            document.getElementById(reportId).classList.add('printing-report');
+            
+            window.print();
+        }
+        
+        // --- Exportação CSV ---
+        
+        function downloadCSV(filename, csvContent) {
+            const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' }); 
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        function exportMedicoes() {
+            if (globalMedicoes.length === 0) {
+                showToast("Não há medições para exportar.", "error");
+                return;
+            }
+            const headers = ["ID", "Data", "Silo", "Tipo", "Medicao (m)", "Audit User", "Audit Timestamp"];
+            const rows = globalMedicoes
+                .sort((a,b) => a.dataTimestamp - b.dataTimestamp) 
+                .map(m => [
+                    m.id, 
+                    m.data, 
+                    m.siloNome, 
+                    m.tipo, 
+                    m.medicao.toFixed(2),
+                    m.auditUser?.email || 'N/A',
+                    m.createdAt?.toDate().toISOString() || 'N/A'
+                ]);
+            
+            let csv = headers.join(";") + "\n";
+            rows.forEach(row => {
+                csv += row.join(";") + "\n";
+            });
+            downloadCSV(`export_medicoes_${activeEtapaId}.csv`, csv);
+        }
+        
+        function exportClassificacoes() {
+            if (globalClassificacoes.length === 0) {
+                showToast("Não há classificações para exportar.", "error");
+                return;
+            }
+            const headers = [
+                "ID", "Data", "Silo", "Tipo", "Umidade", "Impureza", "Avariados", "Quebrados",
+                "Insetos", "Status Insetos", "Mofados", "Fermentados", "Odor", "Milho(Sorgo)", "Sorgo(Milho)",
+                "Corda Viola", "Sorgo Ralepense", "Audit User", "Audit Timestamp"
+            ];
+            const rows = globalClassificacoes
+                .sort((a,b) => a.dataTimestamp - b.dataTimestamp) 
+                .map(c => [
+                    c.id, c.data, c.siloNome, c.tipo, c.umidade, c.impureza, c.avariados, c.quebrados,
+                    c.checkInsetos ? "Sim" : "Nao", c.statusInsetos || "", c.checkMofados ? "Sim" : "Nao",
+                    c.checkFermentados ? "Sim" : "Nao", c.checkOdor ? "Sim" : "Nao", c.checkMilhoNoSorgo ? "Sim" : "Nao",
+                    c.checkSorgoNoMilho ? "Sim" : "Nao", c.checkCordaViola ? "Sim" : "Nao", c.checkSorgoRalepense ? "Sim" : "Nao",
+                    c.auditUser?.email || 'N/A',
+                    c.createdAt?.toDate().toISOString() || 'N/A'
+                ]);
+            
+            let csv = headers.join(";") + "\n";
+            rows.forEach(row => {
+                csv += row.map(val => `"${val || ''}"`).join(";") + "\n";
+            });
+            downloadCSV(`export_classificacoes_${activeEtapaId}.csv`, csv);
+        }
+        
+        function exportStatus() {
+            const { latestMedicoesMap } = calculateCurrentStatus(globalMedicoes);
+            const allSilosStatus = globalSilos.map(silo => {
+                const med = latestMedicoesMap.get(silo.nome);
+                return {
+                    nome: silo.nome,
+                    tipo: silo.tipo,
+                    primeiraData: med ? formatarData(med.primeiraData) : '---',
+                    ultimaData: med ? formatarData(med.data) : '---',
+                    medicao: med ? med.medicao.toFixed(2) : '0.00'
+                };
+            });
+            
+            if (allSilosStatus.length === 0) {
+                showToast("Não há status de silos para exportar.", "error");
+                return;
+            }
+            
+            const headers = ["Silo", "Tipo", "Primeira Medicao", "Ultima Medicao", "Metragem Atual (m)"];
+            const rows = allSilosStatus.map(s => [s.nome, s.tipo, s.primeiraData, s.ultimaData, s.medicao]);
+            
+            let csv = headers.join(";") + "\n";
+            rows.forEach(row => {
+                csv += row.join(";") + "\n";
+            });
+            downloadCSV(`export_status_silos_${activeEtapaId}.csv`, csv);
+        }
+        
+        // --- Funções de Importação CSV ---
+        
+        async function handleImportCsv(file, headerMap, parseFunction, collectionRef) {
+             if (!isAdmin) {
+                 showToast("Apenas administradores podem importar dados.", "error");
+                 return;
+             }
+             if (!file) {
+                showToast("Por favor, selecione um arquivo CSV.", "error");
+                return;
+            }
+            if (!collectionRef) {
+                showToast("Etapa ativa inválida. Não é possível importar.", "error");
+                return;
+            }
+
+            const etapaAtiva = globalEtapas.find(e => e.id === activeEtapaId);
+            const confirmed = await showModalConfirm("Importar Dados",
+                `Deseja importar os dados do arquivo "${file.name}" para a etapa "${etapaAtiva.nome}"?`,
+                "Sim, importar",
+                "btn-secondary focus:ring-amber-500" // Botão Amarelo
+            );
+            if (!confirmed) return;
+
+            loadingMessage.textContent = `Importando dados de "${file.name}"...`;
+            loadingContainer.classList.remove('hidden');
+            mainContent.classList.add('hidden');
+            
+            // NOVO: Prepara dados de auditoria
+            const auditUser = { uid: currentUser.uid, email: currentUser.email };
+            const auditTimestamp = serverTimestamp();
+
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                const text = e.target.result;
+                const lines = text.split(/\r\n|\n/).filter(line => line.trim() !== '');
+                
+                if (lines.length <= 1) {
+                    showToast("Arquivo CSV vazio ou inválido.", "error");
+                    loadingContainer.classList.add('hidden');
+                    mainContent.classList.remove('hidden');
+                    return;
+                }
+                
+                let delimiter = lines[0].includes(';') ? ';' : ',';
+                if (lines[0].includes(';') && lines[0].includes(',')) {
+                    delimiter = ',';
+                }
+                console.log(`Usando delimitador: '${delimiter}'`);
+                
+                const header = lines[0].split(delimiter).map(h => h.trim().toUpperCase());
+                
+                let validHeader = true;
+                const colIndexes = {};
+                for (const key in headerMap) {
+                    const index = header.indexOf(headerMap[key]);
+                    if (index === -1) {
+                        validHeader = false;
+                        console.error(`Coluna não encontrada: ${headerMap[key]}`);
+                    }
+                    colIndexes[key] = index;
+                }
+                
+                if (!validHeader) {
+                     showToast(`Cabeçalho do CSV inválido. Não foi possível encontrar as colunas necessárias. (${Object.values(headerMap).join(', ')})`, "error", 10000);
+                     loadingContainer.classList.add('hidden');
+                     mainContent.classList.remove('hidden');
+                     return;
+                }
+                
+                const dataLines = lines.slice(1);
+                let totalImported = 0;
+                let totalSkipped = 0;
+                let batch = writeBatch(db);
+                let batchCount = 0;
+
+                for (const line of dataLines) {
+                    const cols = line.split(delimiter).map(c => c.trim().replace(/^"|"$/g, '')); 
+                    
+                    try {
+                        const [docData, docRef] = await parseFunction(cols, colIndexes);
+                        
+                        if (docData) {
+                            // Adiciona auditoria
+                            docData.auditUser = auditUser;
+                            docData.createdAt = auditTimestamp;
+                            
+                            batch.set(docRef, docData);
+                            batchCount++;
+                            totalImported++;
+                            loadingMessage.textContent = `Importando ${totalImported} de ${dataLines.length}...`;
+                            
+                            if (batchCount >= 499) { 
+                                await batch.commit();
+                                batch = writeBatch(db);
+                                batchCount = 0;
+                            }
+                        } else {
+                            totalSkipped++;
+                        }
+                    } catch (err) {
+                        console.error("Erro importando linha:", line, err);
+                        totalSkipped++;
+                    }
+                }
+                
+                if (batchCount > 0) {
+                    await batch.commit(); 
+                }
+                
+                loadingContainer.classList.add('hidden');
+                mainContent.classList.remove('hidden');
+                showToast(`Importação concluída! ${totalImported} registros restaurados. ${totalSkipped} linhas puladas.`, "success");
+            };
+            
+            reader.onerror = () => {
+                showToast("Erro ao ler o arquivo.", "error");
+                loadingContainer.classList.add('hidden');
+                mainContent.classList.remove('hidden');
+            };
+
+            reader.readAsText(file, 'UTF-8'); 
+        }
+        
+        const parseMedicaoCsvLine = async (cols, map) => {
+            const siloNome = cols[map.silo];
+            const tipo = cols[map.tipo];
+            const ultimaMedicaoStr = cols[map.medicao].replace(',', '.');
+            const ultimaDataStr = cols[map.data]; // Formato DD/MM/YYYY
+
+            if (!siloNome || !tipo || !ultimaDataStr) return [null, null];
+
+            let silo = globalSilos.find(s => s.nome.toLowerCase() === siloNome.toLowerCase() && s.tipo === tipo);
+            if (!silo) {
+                console.log(`Criando novo silo: ${siloNome} (${tipo})`);
+                // Adiciona auditoria ao criar silo
+                await addDoc(silosCol, { 
+                    nome: siloNome, 
+                    tipo: tipo,
+                    auditUser: { uid: currentUser.uid, email: currentUser.email },
+                    createdAt: serverTimestamp()
+                });
+            }
+
+            const dataISO = formatarDataParaISO(ultimaDataStr); 
+            if (!dataISO) {
+                console.warn(`Data inválida pulada: ${ultimaDataStr}`);
+                return [null, null];
+            }
+            
+            const dataObj = new Date(dataISO + 'T12:00:00');
+            const dataTimestamp = Timestamp.fromDate(dataObj);
+            const medicao = parseFloat(ultimaMedicaoStr);
+            
+            if (isNaN(medicao)) {
+                console.warn(`Medição inválida pulada: ${ultimaMedicaoStr}`);
+                return [null, null];
+            }
+            
+            const medicaoDoc = {
+                siloNome,
+                tipo,
+                data: dataISO,
+                medicao,
+                dataTimestamp
+                // auditUser e createdAt serão adicionados por handleImportCsv
+            };
+            
+            const docRef = doc(medicoesCol); 
+            return [medicaoDoc, docRef];
+        };
+        
+        const parseClassificacaoCsvLine = async (cols, map) => {
+            const dataStr = cols[map.data]; 
+            const siloNome = cols[map.silo];
+            const tipo = cols[map.tipo];
+
+            if (!siloNome || !tipo || !dataStr) return [null, null];
+            
+            const dataISO = formatarDataParaISO(dataStr);
+            if (!dataISO) {
+                console.warn(`Data inválida pulada: ${dataStr}`);
+                return [null, null];
+            }
+            
+            const dataObj = new Date(dataISO + 'T12:00:00');
+            const dataTimestamp = Timestamp.fromDate(dataObj);
+            
+            const getFloat = (val) => {
+                if (!val) return null;
+                const num = parseFloat(val.replace(',', '.'));
+                return isNaN(num) ? null : num;
+            };
+            const getCheck = (val) => (val || "").trim().toLowerCase() === 'sim';
+
+            const classificacaoDoc = {
+                siloNome,
+                tipo,
+                data: dataISO,
+                dataTimestamp,
+                umidade: getFloat(cols[map.umidade]),
+                impureza: getFloat(cols[map.impureza]),
+                avariados: getFloat(cols[map.avariados]),
+                quebrados: getFloat(cols[map.quebrados]),
+                checkInsetos: getCheck(cols[map.checkInsetos]),
+                statusInsetos: cols[map.statusInsetos] || null,
+                checkMofados: getCheck(cols[map.checkMofados]),
+                checkFermentados: getCheck(cols[map.checkFermentados]),
+                checkOdor: getCheck(cols[map.checkOdor]),
+                checkMilhoNoSorgo: getCheck(cols[map.checkMilhoNoSorgo]),
+                checkSorgoNoMilho: getCheck(cols[map.checkSorgoNoMilho]),
+                checkCordaViola: getCheck(cols[map.checkCordaViola]),
+                checkSorgoRalepense: false // Coluna não existe no CSV
+                // auditUser e createdAt serão adicionados por handleImportCsv
+            };
+            
+            const docRef = doc(classificacoesCol); 
+            return [classificacaoDoc, docRef];
+        };
+        
+        // --- Lógica da AI ---
+        
+        function loadApiKey() {
+            const key = localStorage.getItem(GEMINI_API_KEY_NAME);
+            if (key) {
+                aiApiKeyInput.value = key;
+                console.log("Chave de API do Gemini carregada.");
+            }
+        }
+        
+        function saveApiKey() {
+            const key = aiApiKeyInput.value;
+            if (key) {
+                localStorage.setItem(GEMINI_API_KEY_NAME, key);
+                showToast("Chave de API salva no seu navegador.", "success");
+            } else {
+                 localStorage.removeItem(GEMINI_API_KEY_NAME);
+                 showToast("Chave de API removida.", "success");
+            }
+        }
+        
+        function handleAiPromptClick(e) {
+            const button = e.target.closest('.ai-prompt-btn');
+            if (button) {
+                const prompt = button.dataset.prompt;
+                aiCustomPromptInput.value = prompt; 
+                runAiAnalysis(prompt);
+            }
+        }
+        
+        function handleCustomAiPrompt(e) {
+            e.preventDefault();
+            const prompt = aiCustomPromptInput.value;
+            if (prompt) {
+                runAiAnalysis(prompt);
+            }
+        }
+
+        function formatDataForAi() {
+            let context = "DADOS DA ETAPA ATUAL:\n\n";
+            
+            context += "--- LISTA DE SILOS ---\n";
+            context += "Nome;Tipo\n";
+            globalSilos.forEach(s => {
+                context += `${s.nome};${s.tipo}\n`;
+            });
+            
+            context += "\n--- HISTÓRICO DE MEDIÇÕES (100 mais recentes) ---\n";
+            context += "Data;Silo;Tipo;Medicao (m);Autor\n";
+            globalMedicoes.slice(0, 100).forEach(m => { 
+                context += `${m.data};${m.siloNome};${m.tipo};${m.medicao.toFixed(2)};${m.auditUser?.email || 'N/A'}\n`;
+            });
+            
+            context += "\n--- HISTÓRICO DE CLASSIFICAÇÕES (100 mais recentes) ---\n";
+            context += "Data;Silo;Tipo;Umidade;Impureza;Avariados;Quebrados;Insetos;Mofados;Autor\n";
+            globalClassificacoes.slice(0, 100).forEach(c => { 
+                context += `${c.data};${c.siloNome};${c.tipo};${c.umidade};${c.impureza};${c.avariados};${c.quebrados};${c.checkInsetos ? 'Sim':'Nao'};${c.checkMofados ? 'Sim':'Nao'};${c.auditUser?.email || 'N/A'}\n`;
+            });
+            
+            context += "\n--- FIM DOS DADOS ---\n";
+            return context;
+        }
+
+        async function runAiAnalysis(userPrompt) {
+            const apiKey = localStorage.getItem(GEMINI_API_KEY_NAME);
+            if (!apiKey) {
+                showToast("Por favor, insira sua Chave de API do Gemini na aba 'Análise AI'.", "error");
+                showTab('ai'); 
+                aiApiKeyInput.focus();
+                return;
+            }
+            
+            aiLoadingSpinner.classList.remove('hidden');
+            aiResponseOutput.classList.add('hidden');
+            aiResponsePlaceholder.classList.add('hidden');
+            
+            const systemPrompt = "Você é um assistente especialista em gerenciamento de grãos e silos. Sua função é analisar os dados brutos de silos, medições e classificações fornecidos e responder às perguntas do usuário de forma clara, concisa e acionável. Foque em identificar riscos (umidade, insetos) e em resumir o status do estoque. Use os dados fornecidos como sua única fonte de verdade. Formate sua resposta em HTML simples (parágrafos <p>, listas <ul><li> e <strong>).";
+            
+            const dataContext = formatDataForAi();
+            const finalUserQuery = `
+Contexto de Dados:
+${dataContext}
+
+Pergunta do Usuário:
+"${userPrompt}"
+
+Por favor, analise os dados e responda à pergunta.
+`;
+
+            try {
+                const text = await callGeminiApi(systemPrompt, finalUserQuery, apiKey);
+                aiResponseOutput.innerHTML = text; 
+            } catch (error) {
+                console.error("Erro ao chamar API do Gemini:", error);
+                aiResponseOutput.innerHTML = `<p class="text-red-600"><b>Erro:</b> ${error.message}</p>`;
+            } finally {
+                aiLoadingSpinner.classList.add('hidden');
+                aiResponseOutput.classList.remove('hidden');
+            }
+        }
+        
+        async function callGeminiApi(systemPrompt, userQuery, apiKey) {
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: {
+                    parts: [{ text: systemPrompt }]
+                }
+            };
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                const errorBody = await response.json();
+                console.error("Erro da API Gemini:", errorBody);
+                throw new Error(`Erro ${response.status}: ${errorBody.error?.message || 'Falha ao se comunicar com a API'}`);
+            }
+
+            const result = await response.json();
+            const candidate = result.candidates?.[0];
+            
+            if (candidate && candidate.content?.parts?.[0]?.text) {
+                return candidate.content.parts[0].text;
+            } else {
+                console.warn("Resposta da API em formato inesperado:", result);
+                throw new Error("A AI retornou uma resposta vazia ou em formato inesperado.");
+            }
+        }
+        
+        // --- LÓGICA DE ETAPAS ---
+
+        /**
+         * Cria a primeira etapa se nenhuma existir.
+         */
+        async function createFirstEtapa() {
+            if (!isAdmin) return;
+            try {
+                await addDoc(etapasCol, { nome: "Safra Principal" });
+                // O listener onSnapshot vai pegar essa mudança e recarregar
+            } catch (err) {
+                console.error("Erro ao criar primeira etapa:", err);
+                showToast("Erro ao criar etapa inicial.", "error");
+            }
+        }
+        
+        /**
+         * Renderiza as etapas nos seletores (desktop e mobile).
+         */
+        function renderEtapaSelect() {
+            const selects = [selectEtapa, selectEtapaMobile];
+            
+            selects.forEach(select => {
+                const currentVal = select.value;
+                select.innerHTML = ''; // Limpa
+                
+                globalEtapas.forEach(etapa => {
+                    const option = document.createElement('option');
+                    option.value = etapa.id;
+                    option.textContent = etapa.nome;
+                    select.appendChild(option);
+                });
+                
+                // Tenta manter a seleção anterior, se ainda existir
+                if (globalEtapas.find(e => e.id === currentVal)) {
+                    select.value = currentVal;
+                }
+            });
+        }
+        
+        /**
+         * Define a etapa ativa, limpa listeners antigos e inicia novos.
+         * @param {string} etapaId
+         */
+        function setActiveEtapa(etapaId) {
+            if (!etapaId) {
+                console.warn("setActiveEtapa chamado sem ID.");
+                if (globalEtapas.length > 0) {
+                    etapaId = globalEtapas[0].id;
+                } else {
+                    loadingMessage.textContent = "Nenhuma etapa encontrada.";
+                    return;
+                }
+            }
+            
+            if (etapaId === activeEtapaId) return; // Já está ativa
+            
+            console.log("Mudando para Etapa:", etapaId);
+            
+            // 1. Atualiza os seletores
+            selectEtapa.value = etapaId;
+            selectEtapaMobile.value = etapaId;
+            
+            // 2. Cancela listeners antigos
+            unsubSilos();
+            unsubMedicoes();
+            unsubClassificacoes();
+            
+            // 3. Define novos caminhos e ID
+            defineCollectionPaths(etapaId);
+            
+            // 4. Inicia novos listeners
+            setupDataListeners();
+        }
+
+        /**
+         * Inicia os listeners (onSnapshot) para a etapa ativa.
+         */
+        function setupDataListeners() {
+            if (!silosCol || !medicoesCol || !classificacoesCol) {
+                console.error("Coleções não definidas, não é possível iniciar listeners.");
+                return;
+            }
+            
+            // Listener de Silos
+            unsubSilos = onSnapshot(query(silosCol, orderBy("nome")), (snapshot) => {
+                globalSilos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                console.log(`Silos carregados (${activeEtapaId}):`, globalSilos.length);
+                renderSiloSelects();
+                renderSilosTable();
+                updateAllReports();
+            }, (err) => console.error("Erro ouvindo silos:", err));
+
+            // Listener de Medições
+            unsubMedicoes = onSnapshot(query(medicoesCol, orderBy("dataTimestamp", "desc")), (snapshot) => {
+                globalMedicoes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                console.log(`Medições carregadas (${activeEtapaId}):`, globalMedicoes.length);
+                renderUltimasMedicoes();
+                updateAllReports();
+            }, (err) => console.error("Erro ouvindo medições:", err));
+            
+            // Listener de Classificações
+            unsubClassificacoes = onSnapshot(query(classificacoesCol, orderBy("dataTimestamp", "desc")), (snapshot) => {
+                globalClassificacoes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                console.log(`Classificações carregadas (${activeEtapaId}):`, globalClassificacoes.length);
+                renderClassificacaoReport();
+            }, (err) => console.error("Erro ouvindo classificações:", err));
+        }
+        
+        /**
+         * Manipula a adição de uma nova etapa.
+         */
+        async function handleAddEtapa() {
+            if (!isAdmin) return;
+            const nomeEtapa = prompt("Digite o nome da nova etapa (ex: 'Safra 2024/25'):");
+            if (nomeEtapa && nomeEtapa.trim()) {
+                try {
+                    await addDoc(etapasCol, { nome: nomeEtapa.trim() });
+                    showToast("Etapa criada com sucesso!", "success");
+                    // O listener onSnapshot fará o resto
+                } catch (err) {
+                    console.error("Erro ao adicionar etapa:", err);
+                    showToast("Erro ao criar etapa.", "error");
+                }
+            }
+        }
+        
+        /**
+         * Manipula a exclusão da etapa ativa.
+         */
+        async function handleDeleteEtapa() {
+            if (!isAdmin) return;
+            if (globalEtapas.length <= 1) {
+                showToast("Não é possível excluir a última etapa.", "error");
+                return;
+            }
+            
+            const etapaAtiva = globalEtapas.find(e => e.id === activeEtapaId);
+            const confirmed = await showModalConfirm(
+                "Excluir Etapa?",
+                `Atenção: Isso excluirá PERMANENTEMENTE a etapa "${etapaAtiva.nome}" e TODOS os seus dados (silos, medições, classificações).\n\NEsta ação não pode ser desfeita.`,
+                "Excluir",
+                "btn-destructive focus:ring-red-500"
+            );
+            
+            if (confirmed) {
+                try {
+                    // TODO: Esta exclusão é superficial. Para excluir subcoleções,
+                    // seria necessária uma Cloud Function. Por enquanto, apenas exclui o doc da etapa.
+                    await deleteDoc(doc(etapasCol, activeEtapaId));
+                    showToast("Etapa excluída. Os dados (silos, medições) ficarão órfãos.", "success");
+                    // O listener onSnapshot vai recarregar e mudar para uma nova etapa automaticamente.
+                } catch (err) {
+                    console.error("Erro ao excluir etapa:", err);
+                    showToast("Erro ao excluir etapa.", "error");
+                }
+            }
+        }
+        
+        // --- LÓGICA DE SILOS ---
+        
+        /**
+         * Adiciona um novo silo ao Firestore.
+         */
+        async function handleAddSilo(e) {
+            e.preventDefault();
+            if (!isAdmin) return;
+            
+            const nome = document.getElementById('input-silo-nome').value.trim();
+            const tipo = document.getElementById('select-silo-tipo').value;
+            
+            if (!nome || !tipo) {
+                showToast("Nome e Tipo são obrigatórios.", "error");
+                return;
+            }
+            
+            const existe = globalSilos.find(s => s.nome.toLowerCase() === nome.toLowerCase() && s.tipo === tipo);
+            if (existe) {
+                showToast("Um silo com este nome e tipo já existe.", "error");
+                return;
+            }
+            
+            try {
+                await addDoc(silosCol, { 
+                    nome, 
+                    tipo,
+                    auditUser: { uid: currentUser.uid, email: currentUser.email },
+                    createdAt: serverTimestamp()
+                });
+                showToast("Silo adicionado com sucesso!", "success");
+                formSilo.reset();
+            } catch (err) {
+                console.error("Erro ao adicionar silo:", err);
+                showToast("Erro ao salvar silo.", "error");
+            }
+        }
+        
+        /**
+         * Exclui um silo do Firestore.
+         */
+        async function handleDeleteSilo(button) {
+            if (!isAdmin) return;
+            const siloId = button.dataset.id;
+            const siloNome = button.dataset.nome;
+            
+            const confirmed = await showModalConfirm(
+                "Excluir Silo?",
+                `Deseja excluir o silo "${siloNome}"?\n\NIsso NÃO excluirá as medições ou classificações passadas deste silo.`,
+                "Excluir",
+                "btn-destructive focus:ring-red-500"
+            );
+            
+            if (confirmed) {
+                try {
+                    await deleteDoc(doc(silosCol, siloId));
+                    showToast("Silo excluído.", "success");
+                } catch (err) {
+                    console.error("Erro ao excluir silo:", err);
+                    showToast("Erro ao excluir silo.", "error");
+                }
+            }
+        }
+        
+        /**
+         * Renderiza os <select> de silos com base no produto selecionado.
+         */
+        function renderSiloSelects(produtoMedicao = null, produtoBusca = null) {
+            const prodMedicao = produtoMedicao || medicaoProduto.value;
+            const prodClass = classProduto.value;
+            const prodBusca = produtoBusca || searchProduto.value;
+            
+            const popularSelect = (selectEl, produto, isSearch = false) => {
+                const silosFiltrados = produto ? globalSilos.filter(s => s.tipo === produto) : [];
+                
+                const valorAtual = selectEl.value;
+                selectEl.innerHTML = ''; // Limpa
+                
+                if (silosFiltrados.length === 0) {
+                    selectEl.add(new Option(produto ? "Nenhum silo cadastrado" : "Selecione o produto...", ""));
+                    selectEl.disabled = true;
+                    selectEl.classList.add('bg-gray-50');
+                } else {
+                    selectEl.add(new Option(isSearch ? "Todos os silos" : "Selecione...", ""));
+                    silosFiltrados.forEach(silo => {
+                        selectEl.add(new Option(silo.nome, silo.nome));
+                    });
+                    selectEl.disabled = false;
+                    selectEl.classList.remove('bg-gray-50');
+                }
+                selectEl.value = valorAtual; // Tenta restaurar valor
+            };
+            
+            popularSelect(medicaoSilo, prodMedicao, false);
+            popularSelect(classSilo, prodClass, false);
+            popularSelect(searchSilo, prodBusca, true);
+        }
+
+        /**
+         * Renderiza a tabela de silos na aba de Configuração.
+         */
+        function renderSilosTable() {
+            const filtro = configSiloFilter.value;
+            const silosFiltrados = globalSilos.filter(s => filtro === "Todos" || s.tipo === filtro);
+            
+            if (silosFiltrados.length === 0) {
+                tableSilosBody.innerHTML = `<tr><td colspan="4" class="px-6 py-4 text-center text-gray-500">Nenhum silo encontrado.</td></tr>`;
+                return;
+            }
+            
+            tableSilosBody.innerHTML = silosFiltrados.map(silo => `
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${silo.nome}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${silo.tipo}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-400 admin-only" title="${silo.auditUser?.email || 'N/A'}">
+                        ${silo.auditUser?.email?.split('@')[0] || 'N/A'}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium admin-only">
+                        <button class="btn-delete-silo p-1 text-red-600 hover:text-red-800" data-id="${silo.id}" data-nome="${silo.nome}">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+            lucide.createIcons();
+            // Garante que os botões dinâmicos respeitem a permissão
+            updateUiForPermissions();
+        }
+        
+        // --- LÓGICA DE MEDIÇÕES ---
+        
+        /**
+         * Adiciona um novo silo ao Firestore.
+         */
+        async function handleAddMedicao(e) {
+            e.preventDefault();
+            if (!isAdmin) return;
+            
+            const tipo = medicaoProduto.value;
+            const siloNome = medicaoSilo.value;
+            const data = medicaoData.value;
+            const medicaoStr = document.getElementById('medicao-medicao').value;
+            
+            if (!tipo || !siloNome || !data || !medicaoStr) {
+                showToast("Todos os campos são obrigatórios.", "error");
+                return;
+            }
+            
+            const medicao = parseFloat(medicaoStr);
+            if (isNaN(medicao)) {
+                showToast("Valor de medição inválido.", "error");
+                return;
+            }
+            
+            const dataObj = new Date(data + 'T12:00:00'); 
+            const dataTimestamp = Timestamp.fromDate(dataObj);
+            
+            try {
+                await addDoc(medicoesCol, {
+                    siloNome,
+                    tipo,
+                    data, // YYYY-MM-DD (para facilitar filtros)
+                    medicao,
+                    dataTimestamp, // Para ordenação
+                    auditUser: { uid: currentUser.uid, email: currentUser.email },
+                    createdAt: serverTimestamp()
+                });
+                
+                showToast("Medição salva com sucesso!", "success");
+                
+                document.getElementById('medicao-medicao').value = '';
+                medicaoSilo.value = '';
+                
+            } catch (err) {
+                console.error("Erro ao salvar medição:", err);
+                showToast("Erro ao salvar medição.", "error");
+            }
+        }
+        
+        /**
+         * Exclui uma medição do Firestore.
+         */
+        async function handleDeleteMedicao(button) {
+            if (!isAdmin) return;
+            const medicaoId = button.dataset.id;
+            
+            const confirmed = await showModalConfirm(
+                "Excluir Medição?",
+                "Tem certeza que deseja excluir este registro de medição?",
+                "Excluir",
+                "btn-destructive focus:ring-red-500"
+            );
+            
+            if (confirmed) {
+                try {
+                    await deleteDoc(doc(medicoesCol, medicaoId));
+                    showToast("Medição excluída.", "success");
+                } catch (err) {
+                    console.error("Erro ao excluir medição:", err);
+                    showToast("Erro ao excluir medição.", "error");
+                }
+            }
+        }
+        
+        /**
+         * Renderiza a tabela de medições (com filtros) na aba de Lançamento.
+         */
+        function renderUltimasMedicoes() {
+            const filtroProduto = searchProduto.value;
+            const filtroSilo = searchSilo.value;
+            const filtroData = searchData.value;
+            
+            let medicoesFiltradas = globalMedicoes;
+            
+            if (filtroProduto) {
+                medicoesFiltradas = medicoesFiltradas.filter(m => m.tipo === filtroProduto);
+            }
+            if (filtroSilo) {
+                medicoesFiltradas = medicoesFiltradas.filter(m => m.siloNome === filtroSilo);
+            }
+            if (filtroData) {
+                medicoesFiltradas = medicoesFiltradas.filter(m => m.data === filtroData);
+            }
+            
+            if (!filtroProduto && !filtroSilo && !filtroData) {
+                searchResultsTitle.textContent = "Últimas 10 Medições";
+                medicoesFiltradas = medicoesFiltradas.slice(0, 10);
+            } else {
+                 searchResultsTitle.textContent = `Resultados da Busca (${medicoesFiltradas.length})`;
+                 medicoesFiltradas = medicoesFiltradas.slice(0, 100);
+            }
+            
+            if (medicoesFiltradas.length === 0) {
+                tableMedicoesBody.innerHTML = `<tr><td colspan="6" class="px-6 py-4 text-center text-gray-500">Nenhuma medição encontrada.</td></tr>`;
+                return;
+            }
+            
+            tableMedicoesBody.innerHTML = medicoesFiltradas.map(m => `
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${formatarData(m.data)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${m.siloNome}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${m.tipo}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${m.medicao.toFixed(2)} m</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-xs text-gray-400 admin-only" title="${m.auditUser?.email || 'N/A'}">
+                        ${m.auditUser?.email?.split('@')[0] || 'N/A'}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium admin-only">
+                        <button class="btn-delete-medicao p-1 text-red-600 hover:text-red-800" data-id="${m.id}">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+            lucide.createIcons();
+            updateUiForPermissions();
+        }
+        
+        // --- LÓGICA DE CLASSIFICAÇÃO ---
+        
+        /**
+         * Adiciona uma nova classificação ao Firestore.
+         */
+        async function handleAddClassificacao(e) {
+            e.preventDefault();
+            if (!isAdmin) return;
+            
+            const tipo = classProduto.value;
+            const siloNome = classSilo.value;
+            const data = classData.value;
+            
+            if (!tipo || !siloNome || !data) {
+                showToast("Produto, Silo e Data são obrigatórios.", "error");
+                return;
+            }
+            
+            const dataObj = new Date(data + 'T12:00:00');
+            const dataTimestamp = Timestamp.fromDate(dataObj);
+            
+            const getFloat = (id) => {
+                const val = document.getElementById(id).value;
+                return val ? parseFloat(val) : null;
+            };
+            const getCheck = (id) => document.getElementById(id).checked;
+            
+            const classificacaoDoc = {
+                siloNome,
+                tipo,
+                data,
+                dataTimestamp,
+                umidade: getFloat('class-umidade'),
+                impureza: getFloat('class-impureza'),
+                avariados: getFloat('class-avariados'),
+                quebrados: getFloat('class-quebrados'),
+                
+                checkInsetos: getCheck('check-insetos'),
+                statusInsetos: getCheck('check-insetos') ? document.getElementById('class-insetos-status').value : null,
+                checkMofados: getCheck('check-mofados'),
+                checkFermentados: getCheck('check-fermentados'),
+                checkOdor: getCheck('check-odor'),
+                checkMilhoNoSorgo: getCheck('check-milho-no-sorgo'),
+                checkSorgoNoMilho: getCheck('check-sorgo-no-milho'),
+                checkCordaViola: getCheck('check-corda-viola'),
+                checkSorgoRalepense: getCheck('check-sorgo-ralepense'),
+                
+                auditUser: { uid: currentUser.uid, email: currentUser.email },
+                createdAt: serverTimestamp()
+            };
+            
+            try {
+                await addDoc(classificacoesCol, classificacaoDoc);
+                showToast("Classificação salva com sucesso!", "success");
+                formClassificacao.reset();
+                
+                // Restaura sticky
+                classData.value = stickyData;
+                classProduto.value = stickyProduto;
+                renderSiloSelects();
+                insetosStatusContainer.classList.add('hidden');
+                
+            } catch (err) {
+                console.error("Erro ao salvar classificação:", err);
+                showToast("Erro ao salvar classificação.", "error");
+            }
+        }
+        
+        /**
+         * Exclui uma classificação do Firestore.
+         */
+        async function handleDeleteClassificacao(button) {
+            if (!isAdmin) return;
+            const classId = button.dataset.id;
+            
+            const confirmed = await showModalConfirm(
+                "Excluir Classificação?",
+                "Tem certeza que deseja excluir este registro de classificação?",
+                "Excluir",
+                "btn-destructive focus:ring-red-500"
+            );
+            
+            if (confirmed) {
+                try {
+                    await deleteDoc(doc(classificacoesCol, classId));
+                    showToast("Classificação excluída.", "success");
+                } catch (err) {
+                    console.error("Erro ao excluir classification:", err);
+                    showToast("Erro ao excluir classificação.", "error");
+                }
+            }
+        }
+        
+        // --- LÓGICA DE RELATÓRIOS ---
+        
+        /**
+         * Atualiza todos os relatórios (exceto classificação).
+         */
+        function updateAllReports() {
+            if (!globalMedicoes || !globalSilos) return;
+            
+            const hoje = getTodayDateString();
+            
+            const { 
+                totalMilho, totalSorgo, totalWdg, latestMedicoesMap 
+            } = calculateCurrentStatus(globalMedicoes);
+                
+            const { 
+                dailyData, hojeEnsilado, hojeDesensilado 
+            } = calculateDailyMovimentacao(globalMedicoes, hoje);
+            
+            const monthlyData = calculateMonthlyMovimentacao(dailyData);
+            
+            // 1. Report Resumo
+            reportTotalMilho.textContent = totalMilho.toFixed(2);
+            reportTotalSorgo.textContent = totalSorgo.toFixed(2);
+            reportTotalWdg.textContent = totalWdg.toFixed(2);
+            reportHojeEnsilado.textContent = hojeEnsilado.toFixed(2);
+            reportHojeDesensilado.textContent = hojeDesensilado.toFixed(2);
+            reportTotalSilos.textContent = globalSilos.length;
+            
+            const primeiraMedicao = globalMedicoes.length > 0 
+                ? globalMedicoes[globalMedicoes.length - 1].data 
+                : null;
+            reportPrimeiraMedicao.textContent = primeiraMedicao ? formatarData(primeiraMedicao) : '---';
+            
+            // 2. Report Status (tabela)
+            renderStatusTable(latestMedicoesMap);
+            
+            // 3. Report Movimentação Diária
+            renderDailyMovTable(dailyData);
+            
+            // 4. Report Movimentação Mensal
+            renderMonthlyMovTable(monthlyData);
+        }
+
+        /**
+         * Calcula o status atual (Totais por tipo e últimas medições).
+         */
+        function calculateCurrentStatus(medicoes) {
+            let totalMilho = 0, totalSorgo = 0, totalWdg = 0;
+            const latestMedicoesMap = new Map(); // siloNome -> { medicao, data, primeiraData }
+            
+            // Itera de trás para frente (mais antigas para mais novas)
+            for (let i = medicoes.length - 1; i >= 0; i--) {
+                const m = medicoes[i];
+                if (!latestMedicoesMap.has(m.siloNome)) {
+                    latestMedicoesMap.set(m.siloNome, { 
+                        medicao: m.medicao, 
+                        data: m.data, 
+                        primeiraData: m.data // A primeira que encontramos é a mais antiga
+                    });
+                } else {
+                    // Atualiza a medição e a data (mas mantém a primeiraData)
+                    const data = latestMedicoesMap.get(m.siloNome);
+                    data.medicao = m.medicao;
+                    data.data = m.data;
+                    latestMedicoesMap.set(m.siloNome, data);
+                }
+            }
+            
+            // Calcula totais com base apenas nas medições mais recentes de cada silo
+            latestMedicoesMap.forEach((data, siloNome) => {
+                const silo = globalSilos.find(s => s.nome === siloNome);
+                if (silo) {
+                    if (silo.tipo === 'Milho') totalMilho += data.medicao;
+                    else if (silo.tipo === 'Sorgo') totalSorgo += data.medicao;
+                    else if (silo.tipo === 'WDG') totalWdg += data.medicao;
+                }
+            });
+
+            return { totalMilho, totalSorgo, totalWdg, latestMedicoesMap };
+        }
+        
+        /**
+         * Renderiza a tabela de Status Atual por Silo.
+         */
+        function renderStatusTable(latestMedicoesMap) {
+            const filtro = reportStatusFilter.value;
+            
+            const map = latestMedicoesMap || calculateCurrentStatus(globalMedicoes).latestMedicoesMap;
+            
+            const allSilosStatus = globalSilos.map(silo => {
+                const med = map.get(silo.nome);
+                return {
+                    nome: silo.nome,
+                    tipo: silo.tipo,
+                    primeiraData: med ? formatarData(med.primeiraData) : '---',
+                    ultimaData: med ? formatarData(med.data) : '---',
+                    medicao: med ? med.medicao.toFixed(2) : '0.00'
+                };
+            }).filter(s => filtro === "Todos" || s.tipo === filtro);
+            
+            if (allSilosStatus.length === 0) {
+                reportTableStatus.innerHTML = `<tr><td colspan="5" class="px-6 py-4 text-center text-gray-500">Nenhum silo cadastrado.</td></tr>`;
+                return;
+            }
+            
+            reportTableStatus.innerHTML = allSilosStatus.map(s => `
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 text-sm font-medium text-gray-900">${s.nome}</td>
+                    <td class="px-6 py-4 text-sm text-gray-500">${s.tipo}</td>
+                    <td class="px-6 py-4 text-sm text-gray-500">${s.primeiraData}</td>
+                    <td class="px-6 py-4 text-sm text-gray-500">${s.ultimaData}</td>
+                    <td class="px-6 py-4 text-sm text-gray-500">${s.medicao} m</td>
+                </tr>
+            `).join('');
+        }
+        
+        /**
+         * Calcula a movimentação diária (ensilado/desensilado).
+         */
+        function calculateDailyMovimentacao(medicoes, hoje) {
+            const dailyDiffs = new Map(); // siloNome -> { data, medicaoAnterior }
+            const dailyData = new Map(); // data -> { WDG_E, WDG_D, MILHO_E, ... }
+            let hojeEnsilado = 0, hojeDesensilado = 0;
+            
+            for (let i = medicoes.length - 1; i >= 0; i--) {
+                const m = medicoes[i];
+                const key = m.data; // YYYY-MM-DD
+                
+                if (!dailyData.has(key)) {
+                    dailyData.set(key, { 
+                        WDG_E: 0, WDG_D: 0, MILHO_E: 0, MILHO_D: 0, SORGO_E: 0, SORGO_D: 0 
+                    });
+                }
+                
+                if (dailyDiffs.has(m.siloNome)) {
+                    const diff = m.medicao - dailyDiffs.get(m.siloNome).medicaoAnterior;
+                    const dataRow = dailyData.get(key);
+                    const tipoKey = m.tipo.toUpperCase();
+                    
+                    if (diff > 0) { // Ensilado
+                        dataRow[`${tipoKey}_E`] = (dataRow[`${tipoKey}_E`] || 0) + diff;
+                        if (key === hoje) hojeEnsilado += diff;
+                    } else if (diff < 0) { // Desensilado
+                        dataRow[`${tipoKey}_D`] = (dataRow[`${tipoKey}_D`] || 0) + Math.abs(diff);
+                        if (key === hoje) hojeDesensilado += diff;
+                    }
+                }
+                
+                dailyDiffs.set(m.siloNome, { medicaoAnterior: m.medicao });
+            }
+            
+            return { dailyData, hojeEnsilado, hojeDesensilado };
+        }
+        
+        /**
+         * Renderiza a tabela de Movimentação Diária.
+         */
+        function renderDailyMovTable(dailyData) {
+            if (dailyData.size === 0) {
+                 reportTableDailyProduct.innerHTML = `<tr><td colspan="9" class="px-6 py-4 text-center text-gray-500">Nenhuma movimentação registrada.</td></tr>`;
+                 return;
+            }
+            
+            const sortedKeys = Array.from(dailyData.keys()).sort().reverse();
+            
+            reportTableDailyProduct.innerHTML = sortedKeys.map(data => {
+                const row = dailyData.get(data);
+                const totalE = (row.WDG_E || 0) + (row.MILHO_E || 0) + (row.SORGO_E || 0);
+                const totalD = (row.WDG_D || 0) + (row.MILHO_D || 0) + (row.SORGO_D || 0);
+                
+                return `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 text-sm font-medium text-gray-900">${formatarData(data)}</td>
+                        <td class="px-4 py-4 text-sm text-blue-700">${(row.WDG_E || 0).toFixed(2)}</td>
+                        <td class="px-4 py-4 text-sm text-red-700">${(row.WDG_D || 0).toFixed(2)}</td>
+                        <td class="px-4 py-4 text-sm text-blue-700">${(row.MILHO_E || 0).toFixed(2)}</td>
+                        <td class="px-4 py-4 text-sm text-red-700">${(row.MILHO_D || 0).toFixed(2)}</td>
+                        <td class="px-4 py-4 text-sm text-blue-700">${(row.SORGO_E || 0).toFixed(2)}</td>
+                        <td class="px-4 py-4 text-sm text-red-700">${(row.SORGO_D || 0).toFixed(2)}</td>
+                        <td class="px-4 py-4 text-sm text-blue-800 font-bold bg-gray-100">${totalE.toFixed(2)}</td>
+                        <td class="px-4 py-4 text-sm text-red-800 font-bold bg-gray-100">${totalD.toFixed(2)}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        /**
+         * Calcula a movimentação mensal a partir da diária.
+         */
+        function calculateMonthlyMovimentacao(dailyData) {
+            const monthlyData = new Map(); // YYYY-MM -> { WDG_E, WDG_D, ... }
+            
+            dailyData.forEach((data, dataStr) => {
+                const mesKey = dataStr.substring(0, 7); // YYYY-MM
+                
+                if (!monthlyData.has(mesKey)) {
+                    monthlyData.set(mesKey, { 
+                        WDG_E: 0, WDG_D: 0, MILHO_E: 0, MILHO_D: 0, SORGO_E: 0, SORGO_D: 0 
+                    });
+                }
+                
+                const mesRow = monthlyData.get(mesKey);
+                Object.keys(data).forEach(key => {
+                    mesRow[key] = (mesRow[key] || 0) + data[key];
+                });
+            });
+            return monthlyData;
+        }
+        
+        /**
+         * Renderiza a tabela de Movimentação Mensal.
+         */
+        function renderMonthlyMovTable(monthlyData) {
+            if (monthlyData.size === 0) {
+                 reportTableMonthlyProduct.innerHTML = `<tr><td colspan="9" class="px-6 py-4 text-center text-gray-500">Nenhuma movimentação registrada.</td></tr>`;
+                 return;
+            }
+            
+            const sortedKeys = Array.from(monthlyData.keys()).sort().reverse();
+            
+            reportTableMonthlyProduct.innerHTML = sortedKeys.map(mes => {
+                const row = monthlyData.get(mes);
+                const totalE = (row.WDG_E || 0) + (row.MILHO_E || 0) + (row.SORGO_E || 0);
+                const totalD = (row.WDG_D || 0) + (row.MILHO_D || 0) + (row.SORGO_D || 0);
+                
+                return `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 text-sm font-medium text-gray-900">${formatarMes(mes)}</td>
+                        <td class="px-4 py-4 text-sm text-blue-700">${(row.WDG_E || 0).toFixed(2)}</td>
+                        <td class="px-4 py-4 text-sm text-red-700">${(row.WDG_D || 0).toFixed(2)}</td>
+                        <td class="px-4 py-4 text-sm text-blue-700">${(row.MILHO_E || 0).toFixed(2)}</td>
+                        <td class="px-4 py-4 text-sm text-red-700">${(row.MILHO_D || 0).toFixed(2)}</td>
+                        <td class="px-4 py-4 text-sm text-blue-700">${(row.SORGO_E || 0).toFixed(2)}</td>
+                        <td class="px-4 py-4 text-sm text-red-700">${(row.SORGO_D || 0).toFixed(2)}</td>
+                        <td class="px-4 py-4 text-sm text-blue-800 font-bold bg-gray-100">${totalE.toFixed(2)}</td>
+                        <td class="px-4 py-4 text-sm text-red-800 font-bold bg-gray-100">${totalD.toFixed(2)}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        /**
+         * Renderiza a tabela de Relatório de Classificações.
+         */
+        function renderClassificacaoReport() {
+            const filtro = reportClassFilter.value;
+            const classFiltradas = globalClassificacoes.filter(c => filtro === "Todos" || c.tipo === filtro);
+            
+            if (classFiltradas.length === 0) {
+                reportTableClassificacao.innerHTML = `<tr><td colspan="16" class="px-6 py-4 text-center text-gray-500">Nenhuma classificação encontrada.</td></tr>`;
+                return;
+            }
+            
+            const check = (val) => val ? 'Sim' : 'Não';
+            const num = (val) => (val !== null && val !== undefined) ? val.toFixed(2) : '---';
+            const status = (val) => val || '---';
+            const highlight = (val) => val ? 'font-bold text-red-600 highlight-sim-print' : 'text-gray-500';
+            
+            reportTableClassificacao.innerHTML = classFiltradas.map(c => `
+                <tr class="hover:bg-gray-50">
+                    <td class="px-2 py-3 text-sm font-medium text-gray-900">${c.siloNome} (${c.tipo.substring(0,1)})</td>
+                    <td class="px-2 py-3 text-sm text-gray-500">${formatarData(c.data)}</td>
+                    <td class="px-2 py-3 text-sm text-gray-500">${num(c.umidade)}</td>
+                    <td class="px-2 py-3 text-sm text-gray-500">${num(c.impureza)}</td>
+                    <td class="px-2 py-3 text-sm text-gray-500">${num(c.avariados)}</td>
+                    <td class="px-2 py-3 text-sm text-gray-500">${num(c.quebrados)}</td>
+                    <td class="px-2 py-3 text-sm ${highlight(c.checkInsetos)}">${check(c.checkInsetos)}</td>
+                    <td class="px-2 py-3 text-sm text-gray-500">${status(c.statusInsetos)}</td>
+                    <td class="px-2 py-3 text-sm ${highlight(c.checkMofados)}">${check(c.checkMofados)}</td>
+                    <td class="px-2 py-3 text-sm ${highlight(c.checkFermentados)}">${check(c.checkFermentados)}</td>
+                    <td class="px-2 py-3 text-sm ${highlight(c.checkOdor)}">${check(c.checkOdor)}</td>
+                    <td class="px-2 py-3 text-sm ${highlight(c.checkMilhoNoSorgo)}">${check(c.checkMilhoNoSorgo)}</td>
+                    <td class="px-2 py-3 text-sm ${highlight(c.checkSorgoNoMilho)}">${check(c.checkSorgoNoMilho)}</td>
+                    <td class="px-2 py-3 text-sm ${highlight(c.checkCordaViola)}">${check(c.checkCordaViola)}</td>
+                    <td class="px-2 py-3 text-sm ${highlight(c.checkSorgoRalepense)}">${check(c.checkSorgoRalepense)}</td>
+                    <td class="px-2 py-3 text-right text-sm admin-only">
+                        <button class="btn-delete-classificacao p-1 text-red-600 hover:text-red-800" data-id="${c.id}">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+            lucide.createIcons();
+            updateUiForPermissions();
+        }
+        
+        // --- LÓGICA DE ADMIN ---
+        
+        /**
+         * Inicia o listener para a coleção de usuários (só para admins).
+         */
+        function setupAdminListeners() {
+            if (!isAdmin) return;
+            
+            unsubUsers = onSnapshot(query(usersCol, orderBy("displayName")), (snapshot) => {
+                globalUsers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                console.log("Usuários carregados (Admin):", globalUsers.length);
+                renderAdminUserList();
+            }, (err) => console.error("Erro ouvindo usuários (admin):", err));
+        }
+        
+        /**
+         * Renderiza a lista de usuários no painel de admin.
+         */
+        function renderAdminUserList() {
+            if (!isAdmin) return;
+            
+            if (globalUsers.length === 0) {
+                adminUserListBody.innerHTML = `<tr><td colspan="3" class="px-6 py-4 text-center text-gray-500">Nenhum usuário encontrado.</td></tr>`;
+                return;
+            }
+            
+            adminUserListBody.innerHTML = globalUsers.map(user => {
+                const isCurrentUser = user.uid === currentUser.uid;
+                return `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10">
+                                    <img class="h-10 w-10 rounded-full" src="${user.photoURL || `https://placehold.co/40x40/ccc/333?text=${user.displayName[0]}`}" alt="">
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900">${user.displayName}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${user.email}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <select class="role-select border border-gray-300 rounded-md shadow-sm p-1" 
+                                    data-userid="${user.uid}" 
+                                    ${isCurrentUser ? 'disabled' : ''} 
+                                    title="${isCurrentUser ? 'Você não pode alterar sua própria permissão' : 'Alterar permissão'}">
+                                <option value="user" ${user.role === 'user' ? 'selected' : ''}>Usuário</option>
+                                <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Admin</option>
+                            </select>
+                            ${isCurrentUser ? '<span class="ml-2 text-xs text-gray-400">(Você)</span>' : ''}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        /**
+         * Manipula a mudança de permissão no painel de admin.
+         */
+        async function handleRoleChange(e) {
+            if (!isAdmin) return;
+            
+            const select = e.target;
+            if (!select.classList.contains('role-select')) return;
+            
+            const userIdToChange = select.dataset.userid;
+            const newRole = select.value;
+            const userEmail = globalUsers.find(u => u.uid === userIdToChange)?.email || 'Usuário';
+
+            const confirmed = await showModalConfirm(
+                "Mudar Permissão?",
+                `Deseja alterar a permissão de "${userEmail}" para "${newRole}"?`,
+                "Confirmar",
+                "btn-secondary focus:ring-amber-500"
+            );
+            
+            if (confirmed) {
+                try {
+                    const userDocRef = doc(usersCol, userIdToChange);
+                    await setDoc(userDocRef, { role: newRole }, { merge: true });
+                    showToast("Permissão atualizada com sucesso!", "success");
+                } catch (err) {
+                    console.error("Erro ao alterar permissão:", err);
+                    showToast("Erro ao salvar permissão.", "error");
+                    // Reverte a seleção no dropdown
+                    select.value = newRole === 'admin' ? 'user' : 'admin';
+                }
+            } else {
+                // Reverte a seleção no dropdown
+                select.value = newRole === 'admin' ? 'user' : 'admin';
+            }
+        }
+
+
+        // --- Event Listeners Globais ---
+        
+        // Login
+        btnLoginGoogle.addEventListener('click', handleGoogleLogin);
+        
+        // Abas
+        desktopNav.addEventListener('click', (e) => {
+            const link = e.target.closest('a');
+            if (link) {
+                e.preventDefault();
+                const tabId = link.id.split('-')[1]; // "tab-lancamento-desktop" -> "lancamento"
+                showTab(tabId);
+            }
+        });
+        
+        mobileNav.addEventListener('click', (e) => {
+            const link = e.target.closest('a');
+            if (link) {
+                e.preventDefault();
+                const tabId = link.id.split('-')[1]; // "tab-lancamento-mobile" -> "lancamento"
+                showTab(tabId);
+            }
+        });
+        
+        // Menu Mobile
+        btnMenuToggle.addEventListener('click', openMobileMenu);
+        sidebarOverlay.addEventListener('click', closeMobileMenu);
+
+        // Etapas (Ambos os seletores)
+        selectEtapa.addEventListener('change', (e) => setActiveEtapa(e.target.value));
+        selectEtapaMobile.addEventListener('change', (e) => setActiveEtapa(e.target.value));
+        btnAddEtapa.addEventListener('click', handleAddEtapa);
+        btnAddEtapaMobile.addEventListener('click', handleAddEtapa);
+        btnDeleteEtapa.addEventListener('click', handleDeleteEtapa);
+        
+        // Formulários (Listeners de 'submit' são seguros, pois a função interna checa 'isAdmin')
+        formSilo.addEventListener('submit', handleAddSilo);
+        formMedicao.addEventListener('submit', handleAddMedicao);
+        formClassificacao.addEventListener('submit', handleAddClassificacao);
+        
+        // Importação (Seguro, 'isAdmin' checado na função)
+        btnImportMedicoesCsv.addEventListener('click', () => {
+            const file = document.getElementById('csv-medicoes-importer').files[0];
+            const headerMap = {
+                silo: "SILO",
+                tipo: "TIPO",
+                medicao: "ÚLTIMA MEDIÇÃO (M)",
+                data: "DATA DA ÚLTIMA MEDIÇÃO"
+            };
+            handleImportCsv(file, headerMap, parseMedicaoCsvLine, medicoesCol);
+        });
+        
+        btnImportClassificacoesCsv.addEventListener('click', () => {
+            const file = document.getElementById('csv-classificacoes-importer').files[0];
+            const headerMap = {
+                data: "DATA",
+                silo: "SILO",
+                tipo: "TIPO",
+                umidade: "UMIDADE (%)",
+                impureza: "IMPUREZA (%)",
+                avariados: "AVARIADOS (%)",
+                quebrados: "QUEBRADOS (%)",
+                checkInsetos: "INSETOS",
+                statusInsetos: "STATUS INSETOS",
+                checkMofados: "MOFADOS",
+                checkFermentados: "FERMENTADOS",
+                checkOdor: "ODOR",
+                checkMilhoNoSorgo: "MILHO (EM SORGO)",
+                checkSorgoNoMilho: "SORGO (EM MILHO)",
+                checkCordaViola: "CORDA VIOLA"
+            };
+            handleImportCsv(file, headerMap, parseClassificacaoCsvLine, classificacoesCol);
+        });
+
+        
+        medicaoProduto.addEventListener('change', (e) => {
+            renderSiloSelects(e.target.value, null);
+            stickyProduto = e.target.value;
+        });
+        medicaoData.addEventListener('change', (e) => stickyData = e.target.value);
+        
+        classProduto.addEventListener('change', (e) => {
+            renderSiloSelects(null, null); 
+            stickyProduto = e.target.value;
+        });
+        classData.addEventListener('change', (e) => stickyData = e.target.value);
+        checkInsetos.addEventListener('change', (e) => {
+            insetosStatusContainer.classList.toggle('hidden', !e.target.checked);
+        });
+
+        // Filtros
+        searchProduto.addEventListener('change', (e) => {
+            renderSiloSelects(null, e.target.value); 
+            renderUltimasMedicoes();
+        });
+        searchSilo.addEventListener('change', renderUltimasMedicoes);
+        searchData.addEventListener('change', renderUltimasMedicoes);
+        btnClearSearch.addEventListener('click', () => {
+            searchProduto.value = "";
+            searchSilo.value = "";
+            searchData.value = "";
+            renderSiloSelects(null, ""); 
+            renderUltimasMedicoes();
+        });
+        
+        configSiloFilter.addEventListener('change', renderSilosTable);
+        
+        reportStatusFilter.addEventListener('change', renderStatusTable);
+        reportClassFilter.addEventListener('change', renderClassificacaoReport);
+        btnExportMedicoes.addEventListener('click', exportMedicoes);
+        btnExportClassificacoes.addEventListener('click', exportClassificacoes);
+        btnExportStatus.addEventListener('click', exportStatus);
+        
+        // AI
+        btnSaveApiKey.addEventListener('click', saveApiKey);
+        aiQuickPrompts.addEventListener('click', handleAiPromptClick);
+        aiCustomPromptForm.addEventListener('submit', handleCustomAiPrompt);
+
+        // Listeners de Deleção (via delegação de evento no body)
+        document.body.addEventListener('click', (e) => {
+            const btnDeleteSilo = e.target.closest('.btn-delete-silo');
+            if (btnDeleteSilo) {
+                handleDeleteSilo(btnDeleteSilo); 
+                return;
+            }
+            
+            const btnDeleteMedicao = e.target.closest('.btn-delete-medicao');
+            if (btnDeleteMedicao) {
+                handleDeleteMedicao(btnDeleteMedicao); 
+                return;
+            }
+            
+            const btnDeleteClass = e.target.closest('.btn-delete-classificacao');
+            if (btnDeleteClass) {
+                handleDeleteClassificacao(btnDeleteClass); 
+                return;
+            }
+        });
+        
+        // Listener do Painel Admin (via delegação)
+        adminUserListBody.addEventListener('change', handleRoleChange);
+
+        // --- Inicialização ---
+        initFirebase();
+
+    </script>
+</body>
+</html>
